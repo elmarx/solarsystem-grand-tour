@@ -21,5 +21,4 @@ a better understanding of orbital mechanics and a new method for interplanetary 
 
 Example:
 --------
-http://www.youtube.com/playlist?list=PL-lXf3kTWgqym5uxTWRqDfvNMcaxDdlQo
-Had been part of the NASA Space Apps Challenge 2012: http://bit.ly/soltour
+* [AerospaceResearch.net Youtube Channel](http://www.youtube.com/playlist?list=PL-lXf3kTWgqym5uxTWRqDfvNMcaxDdlQo)
