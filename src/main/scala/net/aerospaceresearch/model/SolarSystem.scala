@@ -17,17 +17,25 @@
  * along with SolarSystemGrandTour.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package net.aerospacereasearch.model
+package net.aerospaceresearch.model
+
+import breeze.linalg.DenseVector
 
 /**
- * A body represents a planet, a probe, a moon, any particle etc.
- *
+ * This class presents a solar system to a given point in time
  * User: Elmar Athmer
  * Date: 17.06.13
- * Time: 23:37
- *
- * @param r position, as vector
- * @param mass the mass of the
- * @param a acceleration
+ * Time: 23:34
  */
-class Body(val mass: Double, val r: Vector, val a: Vector)
+class SolarSystem(val bodies: List[Body], val centerMass: Body, val time: Int) {
+
+
+  def nextStep(time: Int): SolarSystem = {
+    this
+  }
+
+  def forces(): List[List[DenseVector[Double]]] =
+    bodies.map(b => b.forcesExperienced(bodies))
+
+
+}
