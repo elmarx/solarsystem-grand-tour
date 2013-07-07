@@ -237,5 +237,24 @@ class ParserSec extends FunSpec with ShouldMatchers {
         }
       }
     }
+
+    it("should normalize strings") {
+      val multiline =
+        """
+          |    a
+          |    b    c d
+          |e f
+          |g   h  i
+          |
+          |j
+          |
+          |
+          |
+          |k
+        """.stripMargin
+      expectResult("a b c d e f g h i j k") {
+        normalize(multiline)
+      }
+    }
   }
 }
