@@ -2,6 +2,7 @@ package net.aerospaceresearch.jplparser
 
 import org.scalatest.{FunSpec, FunSuite}
 import org.scalatest.matchers.ShouldMatchers
+import JplParser._
 
 
 trait ExampleFile {
@@ -213,7 +214,7 @@ class ParserSec extends FunSpec with ShouldMatchers {
       }
     }
 
-    it("should read the first triplet correctly") {
+    it("should read the first triplet") {
       new TripletTestData {
         expectResult((3, 14, 4)) {
           JplParser.parseTriplets(tripletGroup).head
@@ -221,10 +222,18 @@ class ParserSec extends FunSpec with ShouldMatchers {
       }
     }
 
-    it("should read the last triplet correctly") {
+    it("should read the last triplet") {
       new TripletTestData {
         expectResult((899, 10, 4)) {
           JplParser.parseTriplets(tripletGroup).last
+        }
+      }
+    }
+
+    it("should calculate the number of records based on the parsed triplet") {
+      new TripletTestData {
+        expectResult(1016) {
+          numberOfRecordsPerInterval(parseTriplets(tripletGroup))
         }
       }
     }
