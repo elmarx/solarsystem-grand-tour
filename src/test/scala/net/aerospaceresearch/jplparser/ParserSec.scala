@@ -179,6 +179,17 @@ trait ConstantGroupsTestData {
   )
 }
 
+trait TripletTestData {
+  val tripletGroup =
+    """
+      |   1050
+      |
+      |     3   171   231   309   342   366   387   405   423   441   753   819   899
+      |    14    10    13    11     8     7     6     6     6    13    11    10    10
+      |     4     2     2     1     1     1     1     1     1     8     2     4     4
+    """.stripMargin
+}
+
 /**
  * Created by elmar on 06.07.13.
  */
@@ -198,6 +209,22 @@ class ParserSec extends FunSpec with ShouldMatchers {
         expectResult(referenceMap) {
           JplParser.parseConstantGroups(rawNamesWithLeadingWhitespace, rawValuesWithLeadingWhitespace)
           JplParser.parseConstantGroups(rawNames, rawValues)
+        }
+      }
+    }
+
+    it("should read the first triplet correctly") {
+      new TripletTestData {
+        expectResult((3, 14, 4)) {
+          JplParser.parseTriplets(tripletGroup).head
+        }
+      }
+    }
+
+    it("should read the last triplet correctly") {
+      new TripletTestData {
+        expectResult((899, 10, 4)) {
+          JplParser.parseTriplets(tripletGroup).last
         }
       }
     }

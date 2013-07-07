@@ -32,6 +32,25 @@ complete sets of coefficients in each data record for the ith item.
   object Group extends Enumeration {
     val CONST_NAMES = 1040
     val CONST_VALUES = 1041
+    val TRIPLETS = 1050
+  }
+
+  def parseTriplets(s: String): List[(Int, Int, Int)] = {
+    val tripletStrings = s.split("""\n""").filterNot(_.trim.isEmpty).drop(1)
+    val listOfTriplets = tripletStrings.map(_.split("""\s+"""))
+
+    // decomposition the list of triplets
+    val (startingLocations, numberOfChebychevCoefficients, numberOfCompleteSets) = listOfTriplets.toList match {
+      case List(x, y, z) => (x, y, z)
+      case _ => throw new IllegalArgumentException
+    }
+
+    // ok, now clean up the Lists, and parse the ints, and pack together a list of Tuples to return
+    (
+      startingLocations.filterNot(_.isEmpty).map(_.toInt),
+      numberOfChebychevCoefficients.filterNot(_.isEmpty).map(_.toInt),
+      numberOfCompleteSets.filterNot(_.isEmpty).map(_.toInt)
+    ).zipped.toList
   }
 
   def parse(content: String): Map[String, BigDecimal] = {
@@ -46,12 +65,17 @@ complete sets of coefficients in each data record for the ith item.
       ))
     )
 
+    parseTriplets(
+      rawGroups.find(_ matches """^%d\n""".format(Group.TRIPLETS)).getOrElse(throw new IllegalArgumentException(
+        "The specified file dos not include the triplet Group (GROUP %d)".format(Group.TRIPLETS)
+      ))
+    )
 
 
     ???
   }
 
-  def parseConstantGroups(rawNames: String, rawValues: String): immutable.Map[String, BigDecimal] = {
+  def parseConstantGroups(rawNames: String, rawValues: String): Map[String, BigDecimal] = {
     // split the strings by whitespace, then throw away empty items (unprecise split) and
     // the first two elements (Group ID and number of following items)
     def edit(s: String) = s.split( """(\s|\n)+""").filterNot(_.isEmpty).drop(2)
