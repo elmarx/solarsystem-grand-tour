@@ -35,21 +35,13 @@ object JplParser {
    * complete sets of coefficients in each data record for the ith item.
    */
   def parseTriplets(s: String): List[(Int, Int, Int)] = {
-    val tripletStrings = s.split("""\n""").filterNot(_.trim.isEmpty).drop(1)
-    val listOfTriplets = tripletStrings.map(_.split("""\s+"""))
+    val list = normalize(s).split(" ").drop(1).map(_.toInt)
 
-    // decomposition the list of triplets
-    val (startingLocations, numberOfChebychevCoefficients, numberOfCompleteSets) = listOfTriplets.toList match {
-      case List(x, y, z) => (x, y, z)
-      case _ => throw new IllegalArgumentException
-    }
-
-    // ok, now clean up the Lists, parse the ints, and pack together a list of Tuples to return
     (
-      startingLocations.filterNot(_.isEmpty).map(_.toInt),
-      numberOfChebychevCoefficients.filterNot(_.isEmpty).map(_.toInt),
-      numberOfCompleteSets.filterNot(_.isEmpty).map(_.toInt)
-    ).zipped.toList
+      list.slice(0, 13),
+      list.slice(13, 26),
+      list.slice(26, 39)
+      ).zipped.toList
   }
 
   def parse(content: String): Map[String, BigDecimal] = {
