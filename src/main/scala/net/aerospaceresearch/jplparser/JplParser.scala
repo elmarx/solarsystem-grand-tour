@@ -25,6 +25,7 @@ object JplParser {
     val CONST_VALUES = 1041
     val TRIPLETS = 1050
     val DATA_RECORDS = 1070
+    val TIMING_DATA = 1030
   }
 
   /**
@@ -59,6 +60,12 @@ object JplParser {
     val triplets = parseTriplets(
       rawGroups.find(_ matches """^%d\n""".format(Group.TRIPLETS)).getOrElse(throw new IllegalArgumentException(
         "The specified file dos not include the triplet Group (GROUP %d)".format(Group.TRIPLETS)
+      ))
+    )
+
+    val timingData = parseTimingData(
+      rawGroups.find(_ matches """%d\n""".format(Group.TIMING_DATA)).getOrElse(throw new IllegalArgumentException(
+        "The specified file does not include the timing information Group (GROUP %d)".format(Group.TIMING_DATA)
       ))
     )
 
@@ -97,4 +104,10 @@ object JplParser {
 
 
   def normalize(s: String): String = s.replaceAll("""\n""", " ").replaceAll("""\s{2,}""", " ").trim
+
+  def parseTimingData(s: String) = {
+    val list = normalize(s).split(" ").drop(1).map(_.toDouble)
+
+    (list(0), list(1), list(2))
+  }
 }

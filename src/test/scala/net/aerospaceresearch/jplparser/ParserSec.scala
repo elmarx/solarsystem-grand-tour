@@ -256,5 +256,22 @@ class ParserSec extends FunSpec with ShouldMatchers {
         normalize(multiline)
       }
     }
+
+
+    it("should parse the timing data") {
+      val group1030 =
+        """
+          |
+          |   1030
+          |
+          |  2378480.50  2524624.50         32.
+          |
+          |
+        """.stripMargin
+
+      expectResult((2378480.50, 2524624.50, 32.0)) {
+        parseTimingData(group1030)
+      }
+    }
   }
 }
