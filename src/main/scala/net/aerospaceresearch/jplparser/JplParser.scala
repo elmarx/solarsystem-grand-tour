@@ -79,7 +79,7 @@ object JplParser {
   def parseConstantGroups(rawNames: String, rawValues: String): Map[String, BigDecimal] = {
     // split the strings by whitespace, then throw away empty items (unprecise split) and
     // the first two elements (Group ID and number of following items)
-    def edit(s: String) = s.split( """(\s|\n)+""").filterNot(_.isEmpty).drop(2)
+    def edit(s: String) = normalize(s).split(" ").drop(2)
 
     // simply zip the lists into tuples (String, BigDecimal), and convert to Map
     edit(rawNames).zip(
