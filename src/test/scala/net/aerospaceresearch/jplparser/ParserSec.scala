@@ -3,7 +3,7 @@ package net.aerospaceresearch.jplparser
 import org.scalatest.{FunSpec, FunSuite}
 import org.scalatest.matchers.ShouldMatchers
 import JplParser._
-import net.aerospaceresearch.jplparser.data.{TripletData, ConstantGroupsData}
+import net.aerospaceresearch.jplparser.data.{Ascp1950TestData, TripletData, ConstantGroupsData}
 
 /**
  * Specification for the JPL Parser
@@ -28,23 +28,14 @@ class ParserSec extends FunSpec {
       }
     }
 
-    it("should read the first triplet") {
+    it("reads the triplets") {
       new TripletData {
-        expectResult((3, 14, 4)) {
-          JplParser.parseTriplets(tripletGroup).head
-        }
+        expectResult((3, 14, 4))(JplParser.parseTriplets(tripletGroup).head)
+        expectResult((899, 10, 4))(JplParser.parseTriplets(tripletGroup).last)
       }
     }
 
-    it("should read the last triplet") {
-      new TripletData {
-        expectResult((899, 10, 4)) {
-          JplParser.parseTriplets(tripletGroup).last
-        }
-      }
-    }
-
-    it("should calculate the number of records based on the parsed triplet") {
+    it("calculates the number of records based on the parsed triplet") {
       new TripletData {
         expectResult(1016) {
           numberOfRecordsPerInterval(parseTriplets(tripletGroup))
@@ -52,7 +43,7 @@ class ParserSec extends FunSpec {
       }
     }
 
-    it("should normalize strings") {
+    it("normalizes strings") {
       val multiline =
         """
           |    a
@@ -72,7 +63,7 @@ class ParserSec extends FunSpec {
     }
 
 
-    it("should parse the timing data") {
+    it("parses the timing data") {
       val group1030 =
         """
           |
@@ -86,6 +77,22 @@ class ParserSec extends FunSpec {
       expectResult((2378480.50, 2524624.50, 32.0)) {
         parseTimingData(group1030)
       }
+    }
+
+    it("parses the testdata as a list") {
+      new Ascp1950TestData {
+        val list = parseDataRecordsAsList(content, 1016)
+        assert(list(0) === BigDecimal("4.416951494022430000e+07"))
+        assert(list(1015) === BigDecimal("-5.941518184249737000e-10"))
+        assert(list(1016) === BigDecimal("-2.689229672372822000e+07"))
+        assert(list(63) === BigDecimal("7.518925004544147000e-01"))
+
+        assert(list.size === 3 * 1016)
+      }
+    }
+
+    it("knows how many entries to drop at the end of an interval") {
+      expectResult(2)(numberOfTrailingEntries(1016))
     }
   }
 }

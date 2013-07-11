@@ -111,7 +111,39 @@ object JplParser {
     (list(0), list(1), list(2))
   }
 
-  def parseDataRecords(s: String) = {
+  /**
+   *
+   * @param s The content of an ascpXXXX.yyy file
+   * @param numberOfRecordsPerInterval this number needs to be extracted from header.yyy
+   * @return
+   */
+  def parseDataRecordsAsList(s: String, numberOfRecordsPerInterval: Int): List[BigDecimal] = {
+    val trailing = numberOfTrailingEntries(numberOfRecordsPerInterval)
+    def getInterval(rawList: List[BigDecimal], resultList: List[BigDecimal]): List[BigDecimal] = {
+      if(rawList.isEmpty) resultList
+      // drop the interval number (e.g. 1), the numberOfRecords (1018), the Julian date of earliest data in record
+      // (e.g. 2.433264500000000000D+06), the Julian date of latest data in record (e.g. 2.433296500000000000D+06)
+      else {
+        getInterval(
+          rawList.drop(4 + numberOfRecordsPerInterval + trailing),
+          resultList ::: rawList.drop(4).take(numberOfRecordsPerInterval)
+        )
+      }
+    }
+    val rawList = normalize(s).split(" ").map(parseDecimal).toList
 
+    getInterval(rawList, Nil)
   }
+
+  /**
+   * get the number of trailing entries in an interval
+   *
+   * There are always three entries per row, so if the the last row could be filled with "zero" entries if the
+   * number of records is not dividable by 3
+   *
+   * @param records number of records per interval (as given in the header)
+   * @return
+   */
+  def numberOfTrailingEntries(records: Int) = 3 - ((records + 2) % 3) // add 2 for the two prefixed julian date entries
+
 }
