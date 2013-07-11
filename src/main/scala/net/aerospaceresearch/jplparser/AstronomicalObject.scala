@@ -30,4 +30,17 @@ class AstronomicalObject(val id: Int,
    * List of Records specific for this entity
    */
   lazy val records: List[BigDecimal] = readRecordsFromFullList(numberOfCoefficients, 3, numberOfCompleteSets, recordsPerInterval, completeRecords, startingLocation)
+
+
+  /** list of chebychev coefficients
+    * the list of records is built like this:
+    * all first components for the numberOfCoefficients
+    * followed by all second components
+    * followed by all third components
+    */
+  lazy val coefficients: List[(BigDecimal, BigDecimal, BigDecimal)] =
+    (records.slice(0, numberOfCoefficients),
+      records.slice(numberOfCoefficients, numberOfCoefficients * 2),
+      records.slice(numberOfCoefficients * 2, numberOfCoefficients * 3)
+    ).zipped.toList
 }
