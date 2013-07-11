@@ -29,7 +29,7 @@ class AstronomicalObjectSpec extends FunSpec {
     val x = listOfAstronomicalObjects(parseTriplets(tripletGroup), parseDataRecordsAsList(content, 1016))
   }.x
 
-  describe("the Entity") {
+  describe("the astronomical object") {
 
     it("extracts the records belonging to itself from the complete list") {
       val mercury = entities(0)
