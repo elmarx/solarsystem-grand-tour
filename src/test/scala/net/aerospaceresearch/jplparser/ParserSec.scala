@@ -85,7 +85,10 @@ class ParserSec extends FunSpec {
         assert(list(0) === BigDecimal("4.416951494022430000e+07"))
         assert(list(1015) === BigDecimal("-5.941518184249737000e-10"))
         assert(list(1016) === BigDecimal("-2.689229672372822000e+07"))
+
         assert(list(63) === BigDecimal("7.518925004544147000e-01"))
+        assert(list(1842) === BigDecimal("4.177626931814747E-5"))
+        assert(list(2525) === BigDecimal("-942.2572516376157"))
 
         assert(list.size === 3 * 1016)
       }
