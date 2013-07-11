@@ -19,22 +19,13 @@
 
 package net.aerospaceresearch.jplparser
 
-class Entity(val id: Int,
-           startingLocation: Int,
-           numberOfCoefficients: Int,
-           numberOfCompleteSets: Int,
-           completeRecords: List[BigDecimal],
-           recordsPerInterval: Int
-) {
-  val numberOfPolynoms = if(id == 11) 2 else 3
-  private val startingIndex = startingLocation - 3
 
-  /**
-   * List of Records specific for this entity
-   */
-  lazy val records: List[BigDecimal] = {
+trait JplAware {
+
+  def readRecordsFromFullList(numberOfCoefficients: Int, numberOfPolynoms: Int, numberOfCompleteSets: Int, recordsPerInterval: Int, completeRecords: List[BigDecimal], startingLocation: Int): List[BigDecimal] = {
     // how many items of an interval belong to this Entity
     val myRecordsPerInterval = numberOfCoefficients * numberOfPolynoms * numberOfCompleteSets
+    val startingIndex = startingLocation - 3
 
     def recordsIter(completeRecords: List[BigDecimal], collectedRecords: List[BigDecimal]): List[BigDecimal] = {
       if(completeRecords.isEmpty) collectedRecords
@@ -46,4 +37,7 @@ class Entity(val id: Int,
 
     recordsIter(completeRecords, Nil)
   }
+
+  val records: List[BigDecimal]
+
 }

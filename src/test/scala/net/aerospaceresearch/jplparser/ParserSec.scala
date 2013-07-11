@@ -118,13 +118,10 @@ class ParserSec extends FunSpec {
 
     it("generates a list of the entities, with the number of polynoms") {
       new TripletData with Ascp1950TestData {
-        val entities = listOfEntities(parseTriplets(tripletGroup), parseDataRecordsAsList(content, 1016))
-        assert(entities.size === 13)
-        assert(entities(12).numberOfPolynoms === 3)
-        assert(entities(11).numberOfPolynoms === 2)
-        assert(entities(10).numberOfPolynoms === 3)
+        val entities = listOfAstronomicalObjects(parseTriplets(tripletGroup), parseDataRecordsAsList(content, 1016))
+        assert(entities.size === 11)
 
-        assert(entities(0).id === Planet.Mercury.id)
+        assert(entities(0).id === EntityAssignment.Mercury.id)
       }
     }
   }

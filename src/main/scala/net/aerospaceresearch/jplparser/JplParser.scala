@@ -3,8 +3,7 @@ package net.aerospaceresearch.jplparser
 import scala.collection.{immutable, Map}
 import scala.math.BigDecimal
 
-object Planet extends Enumeration {
-  type Planet = Value
+object EntityAssignment extends Enumeration {
   val Mercury, Venus, Earth_Moon_Barycenter, Mars, Jupiter, Saturn,
   Uranus, Neptune, Pluto, Moon_Geocentric, Sun, Nutations, Librations = Value
 }
@@ -147,9 +146,9 @@ object JplParser {
    */
   def numberOfTrailingEntries(records: Int) = 3 - ((records + 2) % 3) // add 2 for the two prefixed julian date entries
 
-  def listOfEntities(triplets: List[(Int, Int, Int)], records: List[BigDecimal]): List[Entity] = {
-    triplets.zipWithIndex.map { case ((starting, coefficients, completeSets),(index)) =>
-      new Entity(index, starting, coefficients, completeSets, records, numberOfRecordsPerInterval(triplets))
+  def listOfAstronomicalObjects(triplets: List[(Int, Int, Int)], records: List[BigDecimal]): List[AstronomicalObject] = {
+    triplets.take(11).zipWithIndex.map { case ((starting, coefficients, completeSets),(index)) =>
+      new AstronomicalObject(index, starting, coefficients, completeSets, records, numberOfRecordsPerInterval(triplets))
     }
   }
 }

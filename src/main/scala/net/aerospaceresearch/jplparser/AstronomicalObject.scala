@@ -19,23 +19,15 @@
 
 package net.aerospaceresearch.jplparser
 
-import org.scalatest.FunSpec
-import net.aerospaceresearch.jplparser.data.{Ascp1950TestData, TripletData}
-import net.aerospaceresearch.jplparser.JplParser._
-
-class EntitySpec extends FunSpec {
-
-  lazy val entities = new TripletData with Ascp1950TestData {
-    val x = listOfEntities(parseTriplets(tripletGroup), parseDataRecordsAsList(content, 1016))
-  }.x
-
-  describe("the Entity") {
-
-    it("extracts the records belonging to itself from the complete list") {
-      val mercury = entities(0)
-      assert(mercury.records.size === 168 * 3)
-      assert(mercury.records(0) === BigDecimal("4.416951494022430000e+07"))
-      assert(mercury.records(168) === BigDecimal("-2.689229672372822000e+07"), "first record in the second interval")
-    }
-  }
+class AstronomicalObject(val id: Int,
+           startingLocation: Int,
+           numberOfCoefficients: Int,
+           numberOfCompleteSets: Int,
+           completeRecords: List[BigDecimal],
+           recordsPerInterval: Int
+) extends JplAware {
+  /**
+   * List of Records specific for this entity
+   */
+  lazy val records: List[BigDecimal] = readRecordsFromFullList(numberOfCoefficients, 3, numberOfCompleteSets, recordsPerInterval, completeRecords, startingLocation)
 }
