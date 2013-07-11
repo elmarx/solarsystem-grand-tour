@@ -1,7 +1,25 @@
+/*
+ * Copyright (c) 2013 Elmar Athmer
+ *
+ * This file is part of SolarSystemGrandTour.
+ *
+ * SolarSystemGrandTour is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * SolarSystemGrandTour is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with SolarSystemGrandTour.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package net.aerospaceresearch.jplparser
 
 import org.scalatest.{FunSpec, FunSuite}
-import org.scalatest.matchers.ShouldMatchers
 import JplParser._
 import net.aerospaceresearch.jplparser.data.{ExampleHeaderFile, Ascp1950TestData, TripletData, ConstantGroupsData}
 
@@ -99,12 +117,14 @@ class ParserSec extends FunSpec {
     }
 
     it("generates a list of the entities, with the number of polynoms") {
-      new TripletData {
-        val entities = listOfEntities(parseTriplets(tripletGroup))
+      new TripletData with Ascp1950TestData {
+        val entities = listOfEntities(parseTriplets(tripletGroup), parseDataRecordsAsList(content, 1016))
         assert(entities.size === 13)
         assert(entities(12).numberOfPolynoms === 3)
         assert(entities(11).numberOfPolynoms === 2)
         assert(entities(10).numberOfPolynoms === 3)
+
+        assert(entities(0).id === Planet.Mercury.id)
       }
     }
   }
