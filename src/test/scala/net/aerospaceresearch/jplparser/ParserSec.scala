@@ -121,7 +121,7 @@ class ParserSec extends FunSpec {
         val entities = listOfAstronomicalObjects(parseTriplets(tripletGroup), parseDataRecordsAsList(content, 1016))
         assert(entities.size === 11)
 
-        assert(entities(0).id === EntityAssignment.Mercury.id)
+        assert(entities(0).id === EntityAssignments.AstronomicalObjects.Mercury.id)
       }
     }
   }

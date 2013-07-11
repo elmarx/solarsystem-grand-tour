@@ -21,12 +21,21 @@ package net.aerospaceresearch.jplparser
 
 import org.scalatest.FunSuite
 
-class PlanetSuite extends FunSuite {
+class EntitySuite extends FunSuite {
 
-  test("planet ids match item numbering in header") {
+  test("astronomical object ids match item numbering in header") {
 
-    assert(EntityAssignment.Earth_Moon_Barycenter.id === 2)
-    assert(EntityAssignment.Mercury.id === 0)
+    assert(EntityAssignments.AstronomicalObjects.Earth_Moon_Barycenter.id === 2)
+    assert(EntityAssignments.AstronomicalObjects.Mercury.id === 0)
+  }
+
+  test("11 'planets' at the moment") {
+    assert(EntityAssignments.AstronomicalObjects.maxId === 11)
+  }
+
+  test("nutation and liberation") {
+    assert(EntityAssignments.Librations === 12)
+    assert(EntityAssignments.Nutations === 11)
   }
 
 }

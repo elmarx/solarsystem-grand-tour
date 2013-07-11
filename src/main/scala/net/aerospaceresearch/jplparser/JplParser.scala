@@ -3,10 +3,18 @@ package net.aerospaceresearch.jplparser
 import scala.collection.{immutable, Map}
 import scala.math.BigDecimal
 
-object EntityAssignment extends Enumeration {
-  val Mercury, Venus, Earth_Moon_Barycenter, Mars, Jupiter, Saturn,
-  Uranus, Neptune, Pluto, Moon_Geocentric, Sun, Nutations, Librations = Value
+/**
+ * These are constants that might change with the version of the ephemerid-files
+ */
+object EntityAssignments {
+  object AstronomicalObjects extends Enumeration {
+    val Mercury, Venus, Earth_Moon_Barycenter, Mars, Jupiter, Saturn,
+    Uranus, Neptune, Pluto, Moon_Geocentric, Sun = Value
+  }
+  val Nutations = 11
+  val Librations = 12
 }
+
 
 
 /**
@@ -96,11 +104,12 @@ object JplParser {
     /* There are three Cartesian components (x, y, z), for each of the items #1-11;
      * there are two components for the 12th item, nutations : d(psi) and d(epsilon);
      * there are three components for the 13th item, librations : three Euler angles.
-     *
-     * so, subtract the 12th item 1 time, (which is 0-based the 11th element)
      */
-    triplets.map { case(_, coefficients, completeSets) => coefficients * 3 * completeSets }.
-      sum - (triplets(11)._2 * triplets(11)._3)
+    triplets.take(EntityAssignments.AstronomicalObjects.maxId).map {
+      case(_, coefficients, completeSets) => coefficients * 3 * completeSets
+    }.sum +
+      2 * (triplets(EntityAssignments.Nutations)._2 * triplets(EntityAssignments.Nutations)._3) +
+      3 * (triplets(EntityAssignments.Librations)._2 * triplets(EntityAssignments.Librations)._3)
 
 
   def normalize(s: String): String = s.replaceAll("""\n""", " ").replaceAll("""\s{2,}""", " ").trim
@@ -147,7 +156,8 @@ object JplParser {
   def numberOfTrailingEntries(records: Int) = 3 - ((records + 2) % 3) // add 2 for the two prefixed julian date entries
 
   def listOfAstronomicalObjects(triplets: List[(Int, Int, Int)], records: List[BigDecimal]): List[AstronomicalObject] = {
-    triplets.take(11).zipWithIndex.map { case ((starting, coefficients, completeSets),(index)) =>
+    triplets.take(EntityAssignments.AstronomicalObjects.maxId).zipWithIndex.map {
+      case ((starting, coefficients, completeSets),(index)) =>
       new AstronomicalObject(index, starting, coefficients, completeSets, records, numberOfRecordsPerInterval(triplets))
     }
   }
