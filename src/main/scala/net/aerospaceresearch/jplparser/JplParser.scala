@@ -100,7 +100,8 @@ object JplParser {
      *
      * so, subtract the 12th item 1 time, (which is 0-based the 11th element)
      */
-    triplets.map(x =>  (x._2 * 3) * x._3).sum - (triplets(11)._2 * triplets(11)._3)
+    triplets.map { case(_, coefficients, completeSets) => coefficients * 3 * completeSets }.
+      sum - (triplets(11)._2 * triplets(11)._3)
 
 
   def normalize(s: String): String = s.replaceAll("""\n""", " ").replaceAll("""\s{2,}""", " ").trim
