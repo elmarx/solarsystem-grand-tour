@@ -147,4 +147,9 @@ object JplParser {
    */
   def numberOfTrailingEntries(records: Int) = 3 - ((records + 2) % 3) // add 2 for the two prefixed julian date entries
 
+  def listOfEntities(triplets: List[(Int, Int, Int)]): List[Entity] = {
+    triplets.zipWithIndex.map { case ((starting, coefficients, completeSets),(index)) =>
+      new Entity(index, starting, coefficients, completeSets)
+    }
+  }
 }

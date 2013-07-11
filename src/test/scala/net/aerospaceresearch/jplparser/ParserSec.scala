@@ -3,7 +3,7 @@ package net.aerospaceresearch.jplparser
 import org.scalatest.{FunSpec, FunSuite}
 import org.scalatest.matchers.ShouldMatchers
 import JplParser._
-import net.aerospaceresearch.jplparser.data.{Ascp1950TestData, TripletData, ConstantGroupsData}
+import net.aerospaceresearch.jplparser.data.{ExampleHeaderFile, Ascp1950TestData, TripletData, ConstantGroupsData}
 
 /**
  * Specification for the JPL Parser
@@ -96,6 +96,16 @@ class ParserSec extends FunSpec {
 
     it("knows how many entries to drop at the end of an interval") {
       expectResult(2)(numberOfTrailingEntries(1016))
+    }
+
+    it("generates a list of the entities, with the number of polynoms") {
+      new TripletData {
+        val entities = listOfEntities(parseTriplets(tripletGroup))
+        assert(entities.size === 13)
+        assert(entities(12).numberOfPolynoms === 3)
+        assert(entities(11).numberOfPolynoms === 2)
+        assert(entities(10).numberOfPolynoms === 3)
+      }
     }
   }
 }
