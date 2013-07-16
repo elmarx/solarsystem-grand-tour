@@ -150,9 +150,9 @@ class ParserSec extends FunSpec {
 
     it("parses data records to AstronomicalObjects") {
       new Ascp1950TestData with TripletData {
-        val quartets = JplParser.parseQuartets(tripletGroup)
+        val quartets = parseQuartets(tripletGroup)
 
-        val result = parseDataRecords(content, 1016, quartets)
+        val result = parseDataRecords(content, quartets)
 
         val mercury = result(0)
         assert(mercury.id === EntityAssignments.AstronomicalObjects.Mercury.id)

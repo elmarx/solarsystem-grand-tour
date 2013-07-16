@@ -143,7 +143,8 @@ object JplParser {
   }
 
 
-  def parseDataRecords(s: String, numberOfRecordsPerInterval: Int, quartets: List[(Int, Int, Int, Int)]): List[AstronomicalObject] = {
+  def parseDataRecords(s: String, quartets: List[(Int, Int, Int, Int)]): List[AstronomicalObject] = {
+    val numberOfRecordsPerInterval = recordsPerInterval(quartets)
     val rawList = normalize(s).split(" ").map(parseDecimal).toList
 
     for ((entity, index) <- quartets.zipWithIndex)
