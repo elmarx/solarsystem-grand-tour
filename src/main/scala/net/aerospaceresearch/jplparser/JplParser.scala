@@ -1,20 +1,22 @@
 package net.aerospaceresearch.jplparser
 
-import scala.collection.{immutable, Map}
+import scala.collection.Map
 import scala.math.BigDecimal
+import Types._
 
 /**
  * These are constants that might change with the version of the ephemerid-files
  */
 object EntityAssignments {
+
   object AstronomicalObjects extends Enumeration {
     val Mercury, Venus, Earth_Moon_Barycenter, Mars, Jupiter, Saturn,
     Uranus, Neptune, Pluto, Moon_Geocentric, Sun = Value
   }
+
   val Nutations = 11
   val Librations = 12
 }
-
 
 
 /**
@@ -52,8 +54,20 @@ object JplParser {
       ).zipped.toList
   }
 
+  /**
+   * augments the triplets with the number of components per coefficient (for nutations,
+   * there are only two components, for all other entities, there are three)
+   * @param triplets
+   * @return
+   */
+  def quartets(triplets: List[(Int, Int, Int)]): List[(Int, Int, Int, Int)] =
+    triplets.zipWithIndex.map {
+      case ((a, b, c), EntityAssignments.Nutations) => (a, b, c, 2)
+      case ((a, b, c), _) => (a, b, c, 3)
+    }
+
   def parse(content: String): Map[String, BigDecimal] = {
-    val rawGroups = content.split("""GROUP\s*""")
+    val rawGroups = content.split( """GROUP\s*""")
 
     parseConstantGroups(
       rawGroups.find(_ matches """^%d\n.*""".format(Group.CONST_NAMES)).getOrElse(throw new IllegalArgumentException(
@@ -82,8 +96,15 @@ object JplParser {
     ???
   }
 
+  /**
+   * parses the constants defined in header.yyy
+   *
+   * @param rawNames the complete group of constant names
+   * @param rawValues the complete group of values
+   * @return
+   */
   def parseConstantGroups(rawNames: String, rawValues: String): Map[String, BigDecimal] = {
-    // split the strings by whitespace, then throw away empty items (unprecise split) and
+    // split the strings by whitespace, and drop
     // the first two elements (Group ID and number of following items)
     def edit(s: String) = normalize(s).split(" ").drop(2)
 
@@ -99,50 +120,87 @@ object JplParser {
    * @param triplets Triplets as defined in group 1050
    * @return
    */
-  def numberOfRecordsPerInterval(triplets: List[(Int, Int, Int)]): Int =
-    // [2] states:
-    /* There are three Cartesian components (x, y, z), for each of the items #1-11;
-     * there are two components for the 12th item, nutations : d(psi) and d(epsilon);
-     * there are three components for the 13th item, librations : three Euler angles.
-     */
-    triplets.take(EntityAssignments.AstronomicalObjects.maxId).map {
-      case(_, coefficients, completeSets) => coefficients * 3 * completeSets
-    }.sum +
-      2 * (triplets(EntityAssignments.Nutations)._2 * triplets(EntityAssignments.Nutations)._3) +
-      3 * (triplets(EntityAssignments.Librations)._2 * triplets(EntityAssignments.Librations)._3)
+  def recordsPerInterval(triplets: List[(Int, Int, Int)]): Int =
+  // [2] states:
+  /* There are three Cartesian components (x, y, z), for each of the items #1-11;
+   * there are two components for the 12th item, nutations : d(psi) and d(epsilon);
+   * there are three components for the 13th item, librations : three Euler angles.
+   */
+    quartets(triplets).map {
+      case (_, coefficients, completeSets, components) => coefficients * components * completeSets
+    }.sum
 
 
-  def normalize(s: String): String = s.replaceAll("""\n""", " ").replaceAll("""\s{2,}""", " ").trim
+  /**
+   * normalizes a string, i.e. replace all linebreaks to normal spaces, and remove duplicate spaces
+   * @param s an arbitrary string to normalize
+   * @return
+   */
+  def normalize(s: String): String = s.replaceAll( """\n""", " ").replaceAll( """\s{2,}""", " ").trim
 
-  def parseTimingData(s: String) = {
-    val list = normalize(s).split(" ").drop(1).map(_.toDouble)
+  /**
+   * parses the timing data (start and end date, interval size)
+   * @param s the complete group 1030 from header.yyy
+   * @return
+   */
+  def parseTimingData(s: String): (JulianTime, JulianTime, Double) = {
+    val list = normalize(s).split(" ").drop(1)
 
-    (list(0), list(1), list(2))
+    (parseDecimal(list(0)), parseDecimal(list(1)), list(2).toDouble)
+  }
+
+
+  def parseDataRecords(s: String, numberOfRecordsPerInterval: Int, quartets: List[(Int, Int, Int, Int)]): List[AstronomicalObject] = {
+    val rawList = normalize(s).split(" ").map(parseDecimal).toList
+
+    for ((entity, index) <- quartets.zipWithIndex)
+      yield AstronomicalObject(
+        index,
+        extractIntervalsForEntity(entity, groupOfIntervals(rawList, numberOfRecordsPerInterval))
+      )
   }
 
   /**
+   * group the raw List of records by intervals
    *
-   * @param s The content of an ascpXXXX.yyy file
-   * @param numberOfRecordsPerInterval this number needs to be extracted from header.yyy
+   * each interval contains: the index, the number of Records, the start date, the end date (take these!)
+   * than a list of Records (take these!), and the trailing entries (ignore them)
+   *
+   * @param rawList flat list of items of type T
+   * @param recordsPerInterval how many records are being stored per interval
+   * @tparam T
    * @return
    */
-  def parseDataRecordsAsList(s: String, numberOfRecordsPerInterval: Int): List[BigDecimal] = {
-    val trailing = numberOfTrailingEntries(numberOfRecordsPerInterval)
-    def getInterval(rawList: List[BigDecimal], resultList: List[BigDecimal]): List[BigDecimal] = {
-      if(rawList.isEmpty) resultList
-      // drop the interval number (e.g. 1), the numberOfRecords (1018), the Julian date of earliest data in record
-      // (e.g. 2.433264500000000000D+06), the Julian date of latest data in record (e.g. 2.433296500000000000D+06)
-      else {
-        getInterval(
-          rawList.drop(4 + numberOfRecordsPerInterval + trailing),
-          resultList ::: rawList.drop(4).take(numberOfRecordsPerInterval)
-        )
-      }
-    }
-    val rawList = normalize(s).split(" ").map(parseDecimal).toList
+  def groupOfIntervals[T](rawList: List[T], recordsPerInterval: Int): List[List[T]] = {
+    // intervalLength is the total number of records per interval
+    val intervalLength: Int = 2 + 2 + recordsPerInterval + numberOfTrailingEntries(recordsPerInterval)
 
-    getInterval(rawList, Nil)
+    for (interval <- rawList.grouped(intervalLength).toList)
+    yield interval.drop(2).take(2 + recordsPerInterval)
   }
+
+
+  /**
+   * extracts from a grouped list of flat records the Intervals
+   *
+   * @param intervals flat list of records, grouped by entity
+   * @return Intervals with start and end, plus the corresponding sets of coefficients
+   */
+  def extractIntervalsForEntity(quartet: (Int, Int, Int, Int), intervals: List[List[BigDecimal]]): List[Interval] = {
+    val (firstRecord, xCoefficients, xCompleteSets, xComponents) = quartet
+
+    intervals.map {
+      case startingTime :: endingTime :: records => {
+
+        val myRecords: List[List[BigDecimal]] = records.drop(firstRecord - 3).
+          take(xCoefficients * xComponents * xCompleteSets).grouped(xCoefficients * xComponents).toList
+
+        Interval(startingTime, endingTime, myRecords.map(CoefficientSet(_, xCoefficients)))
+      }
+      case _ => throw new IllegalArgumentException("the data do not contain correct intervals")
+    }
+  }
+
 
   /**
    * get the number of trailing entries in an interval
@@ -155,10 +213,4 @@ object JplParser {
    */
   def numberOfTrailingEntries(records: Int) = 3 - ((records + 2) % 3) // add 2 for the two prefixed julian date entries
 
-  def listOfAstronomicalObjects(triplets: List[(Int, Int, Int)], records: List[BigDecimal]): List[AstronomicalObject] = {
-    triplets.take(EntityAssignments.AstronomicalObjects.maxId).zipWithIndex.map {
-      case ((starting, coefficients, completeSets),(index)) =>
-      new AstronomicalObject(index, starting, coefficients, completeSets, records, numberOfRecordsPerInterval(triplets))
-    }
-  }
 }

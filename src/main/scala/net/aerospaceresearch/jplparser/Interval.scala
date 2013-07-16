@@ -19,4 +19,6 @@
 
 package net.aerospaceresearch.jplparser
 
-case class AstronomicalObject(id: Int, intervals: List[Interval])
+import Types._
+
+case class Interval(startingTime: JulianTime, endingTime: JulianTime, sets: List[CoefficientSet])

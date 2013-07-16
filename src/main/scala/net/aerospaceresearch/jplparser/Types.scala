@@ -19,4 +19,9 @@
 
 package net.aerospaceresearch.jplparser
 
-case class AstronomicalObject(id: Int, intervals: List[Interval])
+object Types {
+
+  type Coefficient = (BigDecimal, BigDecimal, BigDecimal)
+  type JulianTime = BigDecimal
+
+}

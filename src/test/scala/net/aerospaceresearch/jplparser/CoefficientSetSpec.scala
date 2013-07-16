@@ -19,4 +19,24 @@
 
 package net.aerospaceresearch.jplparser
 
-case class AstronomicalObject(id: Int, intervals: List[Interval])
+import org.scalatest.FunSpec
+
+class CoefficientSetSpec extends FunSpec {
+
+  describe("the CoefficientSet Factory") {
+
+    it("generates a CoefficentSet for a list of records") {
+      val data = List(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12).map(BigDecimal(_))
+
+      val expectedResult = List(
+        (BigDecimal(1), BigDecimal(5), BigDecimal(9)),
+        (BigDecimal(2), BigDecimal(6), BigDecimal(10)),
+        (BigDecimal(3), BigDecimal(7), BigDecimal(11)),
+        (BigDecimal(4), BigDecimal(8), BigDecimal(12))
+      )
+
+      assert(expectedResult === CoefficientSet(data, 4).coefficients)
+    }
+  }
+
+}

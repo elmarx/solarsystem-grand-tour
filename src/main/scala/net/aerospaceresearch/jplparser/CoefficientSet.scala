@@ -19,4 +19,20 @@
 
 package net.aerospaceresearch.jplparser
 
-case class AstronomicalObject(id: Int, intervals: List[Interval])
+import Types._
+
+case class CoefficientSet(coefficients: List[Coefficient])
+
+object CoefficientSet {
+
+  def apply(coefficents: List[BigDecimal], xCoefficients: Int): CoefficientSet =
+    CoefficientSet(
+      (
+        coefficents.slice(0, xCoefficients),
+        coefficents.slice(xCoefficients, xCoefficients * 2),
+        coefficents.slice(xCoefficients * 2, xCoefficients * 3)
+      ).zipped.toList
+    )
+
+
+}

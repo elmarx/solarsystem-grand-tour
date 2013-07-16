@@ -25,32 +25,4 @@ import net.aerospaceresearch.jplparser.JplParser._
 
 class AstronomicalObjectSpec extends FunSpec {
 
-  lazy val entities = new TripletData with Ascp1950TestData {
-    val x = listOfAstronomicalObjects(parseTriplets(tripletGroup), parseDataRecordsAsList(content, 1016))
-  }.x
-
-  describe("the astronomical object") {
-
-    it("extracts the records belonging to itself from the complete list") {
-      val mercury = entities(0)
-      assert(mercury.records.size === 168 * 3)
-      assert(mercury.records(0) === BigDecimal("4.416951494022430000e+07"))
-      assert(mercury.records(168) === BigDecimal("-2.689229672372822000e+07"), "first record in the second interval")
-    }
-
-    it("holds a list of coefficients") {
-      val mercury = entities(0)
-      assert(mercury.coefficients.size === 14)
-      assert(mercury.coefficients(0) === (
-          BigDecimal("4.41695149402243E7"),
-          BigDecimal("-3.471755709306075E7"),
-          BigDecimal("-2.316274987155261E7")
-      ))
-      assert(mercury.coefficients(5) === (
-        BigDecimal("19.6008406619754"),
-        BigDecimal("-65.53857324099615"),
-        BigDecimal("-37.03820425941331")
-        ))
-    }
-  }
 }

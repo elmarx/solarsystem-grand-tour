@@ -53,10 +53,18 @@ class ParserSec extends FunSpec {
       }
     }
 
+    it("augments triplets to be quartets") {
+      new TripletData {
+        expectResult((3, 14, 4, 3))(JplParser.quartets(parseTriplets(tripletGroup)).head)
+        expectResult((819, 10, 4, 2))(JplParser.quartets(parseTriplets(tripletGroup))(11))
+        expectResult((899, 10, 4, 3))(JplParser.quartets(parseTriplets(tripletGroup)).last)
+      }
+    }
+
     it("calculates the number of records based on the parsed triplet") {
       new TripletData {
         expectResult(1016) {
-          numberOfRecordsPerInterval(parseTriplets(tripletGroup))
+          recordsPerInterval(parseTriplets(tripletGroup))
         }
       }
     }
@@ -97,31 +105,77 @@ class ParserSec extends FunSpec {
       }
     }
 
-    it("parses the testdata as a list") {
-      new Ascp1950TestData {
-        val list = parseDataRecordsAsList(content, 1016)
-        assert(list(0) === BigDecimal("4.416951494022430000e+07"))
-        assert(list(1015) === BigDecimal("-5.941518184249737000e-10"))
-        assert(list(1016) === BigDecimal("-2.689229672372822000e+07"))
-
-        assert(list(63) === BigDecimal("7.518925004544147000e-01"))
-        assert(list(1842) === BigDecimal("4.177626931814747E-5"))
-        assert(list(2525) === BigDecimal("-942.2572516376157"))
-
-        assert(list.size === 3 * 1016)
-      }
-    }
-
     it("knows how many entries to drop at the end of an interval") {
       expectResult(2)(numberOfTrailingEntries(1016))
     }
 
-    it("generates a list of the entities, with the number of polynoms") {
-      new TripletData with Ascp1950TestData {
-        val entities = listOfAstronomicalObjects(parseTriplets(tripletGroup), parseDataRecordsAsList(content, 1016))
-        assert(entities.size === 11)
 
-        assert(entities(0).id === EntityAssignments.AstronomicalObjects.Mercury.id)
+    it("groups intervals and filters out the garbage elements") {
+      val expectedResult = List(
+        List("start1", "end1", "1", "2", "3", "4", "4"),
+        List("start2", "end2", "5", "6", "7", "8", "8"),
+        List("start3", "end3", "9", "10", "11", "12", "12")
+      )
+
+      expectResult(expectedResult) {
+        groupOfIntervals(List(
+          "index1", "number", "start1", "end1", "1", "2", "3", "4", "4", "empty", "empty",
+          "index2", "number", "start2", "end2", "5", "6", "7", "8", "8", "empty", "empty",
+          "index3", "number", "start3", "end3", "9", "10", "11", "12", "12", "empty", "empty"
+        ), 5)
+      }
+    }
+
+    it("extracts intervals for entities") {
+      val timing = BigDecimal(0.5)
+      val x = BigDecimal(1)
+      val y = BigDecimal(2)
+      val z = BigDecimal(3)
+      val other = BigDecimal(9)
+
+      val intervals = List(List(timing, timing, x, x, x, y, y, y, z, z, z, other, other, other))
+
+      val expected = Interval(timing, timing, List(
+        CoefficientSet(List(
+          (x, y, z),
+          (x, y, z),
+          (x, y, z)
+        ))
+      ))
+
+      expectResult(List(expected)) {
+        extractIntervalsForEntity((3, 3, 1, 3), intervals)
+      }
+    }
+
+    it("parses data records to AstronomicalObjects") {
+      new Ascp1950TestData with TripletData {
+        val quartets = JplParser.quartets(parseTriplets(tripletGroup))
+
+        val result = parseDataRecords(content, 1016, quartets)
+
+        val mercury = result(0)
+        assert(mercury.id === EntityAssignments.AstronomicalObjects.Mercury.id)
+        assert(mercury.intervals.size === 3)
+
+        assert(mercury.intervals(0).startingTime === 2.433264500000000000e+06)
+        assert(mercury.intervals(0).endingTime === 2.433296500000000000e+06)
+
+        assert(mercury.intervals(2).startingTime === 2.433328500000000000e+06)
+        assert(mercury.intervals(2).endingTime === 2.433360500000000000e+06)
+
+        assert(mercury.intervals(0).sets.size === 4)
+
+        val uranus = result(6)
+        assert(uranus.id === EntityAssignments.AstronomicalObjects.Uranus.id)
+
+        assert(uranus.intervals(2).startingTime === mercury.intervals(2).startingTime)
+
+        assert(uranus.intervals(0).sets(0).coefficients(0) === (
+          BigDecimal("-1.844007491629836E8"),
+          BigDecimal("2.590029055671577E9"),
+          BigDecimal("1.136985853558836E9")
+        ))
       }
     }
   }
