@@ -55,16 +55,17 @@ object JplParser {
   }
 
   /**
-   * augments the triplets with the number of components per coefficient (for nutations,
+   * parse the triplets and augment them with the number of components per coefficient (for nutations,
    * there are only two components, for all other entities, there are three)
-   * @param triplets
+   * @param s
    * @return
    */
-  def quartets(triplets: List[(Int, Int, Int)]): List[(Int, Int, Int, Int)] =
-    triplets.zipWithIndex.map {
+  def parseQuartets(s: String): List[(Int, Int, Int, Int)] = {
+    parseTriplets(s).zipWithIndex.map {
       case ((a, b, c), EntityAssignments.Nutations) => (a, b, c, 2)
       case ((a, b, c), _) => (a, b, c, 3)
     }
+  }
 
   def parse(content: String): Map[String, BigDecimal] = {
     val rawGroups = content.split( """GROUP\s*""")
@@ -78,17 +79,9 @@ object JplParser {
       ))
     )
 
-    val triplets = parseTriplets(
-      rawGroups.find(_ matches """^%d\n""".format(Group.TRIPLETS)).getOrElse(throw new IllegalArgumentException(
-        "The specified file dos not include the triplet Group (GROUP %d)".format(Group.TRIPLETS)
-      ))
-    )
 
-    val timingData = parseTimingData(
-      rawGroups.find(_ matches """%d\n""".format(Group.TIMING_DATA)).getOrElse(throw new IllegalArgumentException(
-        "The specified file does not include the timing information Group (GROUP %d)".format(Group.TIMING_DATA)
-      ))
-    )
+
+
 
 
 
@@ -117,16 +110,16 @@ object JplParser {
 
   /**
    *
-   * @param triplets Triplets as defined in group 1050
+   * @param quartets Triplets as defined in group 1050, augmented by number of components
    * @return
    */
-  def recordsPerInterval(triplets: List[(Int, Int, Int)]): Int =
+  def recordsPerInterval(quartets: List[(Int, Int, Int, Int)]): Int =
   // [2] states:
   /* There are three Cartesian components (x, y, z), for each of the items #1-11;
    * there are two components for the 12th item, nutations : d(psi) and d(epsilon);
    * there are three components for the 13th item, librations : three Euler angles.
    */
-    quartets(triplets).map {
+    quartets.map {
       case (_, coefficients, completeSets, components) => coefficients * components * completeSets
     }.sum
 

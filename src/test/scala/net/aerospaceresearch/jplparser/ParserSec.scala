@@ -55,16 +55,16 @@ class ParserSec extends FunSpec {
 
     it("augments triplets to be quartets") {
       new TripletData {
-        expectResult((3, 14, 4, 3))(JplParser.quartets(parseTriplets(tripletGroup)).head)
-        expectResult((819, 10, 4, 2))(JplParser.quartets(parseTriplets(tripletGroup))(11))
-        expectResult((899, 10, 4, 3))(JplParser.quartets(parseTriplets(tripletGroup)).last)
+        expectResult((3, 14, 4, 3))(JplParser.parseQuartets(tripletGroup).head)
+        expectResult((819, 10, 4, 2))(JplParser.parseQuartets(tripletGroup)(11))
+        expectResult((899, 10, 4, 3))(JplParser.parseQuartets(tripletGroup).last)
       }
     }
 
     it("calculates the number of records based on the parsed triplet") {
       new TripletData {
         expectResult(1016) {
-          recordsPerInterval(parseTriplets(tripletGroup))
+          recordsPerInterval(parseQuartets(tripletGroup))
         }
       }
     }
@@ -150,7 +150,7 @@ class ParserSec extends FunSpec {
 
     it("parses data records to AstronomicalObjects") {
       new Ascp1950TestData with TripletData {
-        val quartets = JplParser.quartets(parseTriplets(tripletGroup))
+        val quartets = JplParser.parseQuartets(tripletGroup)
 
         val result = parseDataRecords(content, 1016, quartets)
 
