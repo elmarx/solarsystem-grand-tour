@@ -178,5 +178,11 @@ class ParserSec extends FunSpec {
         ))
       }
     }
+
+    it("generates the EphemerisService based on the header/content given") {
+      new Ascp1950TestData with ExampleHeaderFile {
+        val service = generateService(headerContent, content)
+      }
+    }
   }
 }

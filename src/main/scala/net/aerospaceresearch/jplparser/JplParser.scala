@@ -207,4 +207,34 @@ object JplParser {
    */
   def numberOfTrailingEntries(records: Int) = 3 - ((records + 2) % 3) // add 2 for the two prefixed julian date entries
 
+
+  /**
+   * This function puts together the pieces of parsing, and generates a service based on raw file input
+   * @param header
+   * @param data
+   */
+  def generateService(header: String, data: String) = {
+    def findGroup(id: Int)(s: String): Boolean =
+      """%d\n""".format(id).r.findFirstIn(s).isDefined
+
+    val rawGroups = header.split( """GROUP\s*""")
+
+    val quartets = parseQuartets(
+        rawGroups.find(findGroup(Group.TRIPLETS)).getOrElse(
+         throw new IllegalArgumentException(
+           "The specified file does not include 'GROUP %d' for physical constant values".format(Group.CONST_NAMES)
+        ))
+    )
+
+    val timingData = parseTimingData(
+      rawGroups.find(findGroup(Group.TIMING_DATA)).getOrElse(throw new
+          IllegalArgumentException(
+        "The specified file does not include the timing information Group (GROUP %d)".format(Group.TIMING_DATA)
+      ))
+    )
+
+    val objects = parseDataRecords(data, quartets)
+
+    new EphemerisService(quartets, objects, timingData)
+  }
 }
