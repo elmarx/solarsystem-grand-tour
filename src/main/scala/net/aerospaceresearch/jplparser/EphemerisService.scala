@@ -38,9 +38,28 @@ class EphemerisService(quartets: List[(Int, Int, Int, Int)],
    */
   def inAu(implicit value: BigDecimal) = value / constants.get("AU").getOrElse(0.149597870699626200e+09)
 
-  def position(entity: EntityAssignments.AstronomicalObjects.Value, pointInTime: JulianTime): Position = {
+  def inAu(implicit value: (BigDecimal, BigDecimal, BigDecimal)): (BigDecimal, BigDecimal, BigDecimal) =
+    (inAu(value._1), inAu(value._2), inAu(value._3))
 
-    ???
+
+  def position(entityId: EntityAssignments.AstronomicalObjects.Value, pointInTime: JulianTime): Position = {
+    val entity = this.entity(entityId)
+    val coefficientSet = entity.intervals.find(_.includes(pointInTime)).get.sets(subInterval(entity, pointInTime))
+    val time = chebyshevTime(entityId, pointInTime)
+
+    val calculator = calculatePositionComponent(chebychevAt((1, time), time)) _
+
+    val x = calculator(coefficientSet.coefficients.map(_._1))
+    val y = calculator(coefficientSet.coefficients.map(_._2))
+    val z = calculator(coefficientSet.coefficients.map(_._3))
+
+    inAu((x, y, z))
+  }
+
+  def calculatePositionComponent(positionPolynom: (Int) => BigDecimal)(coefficients: List[BigDecimal]) = {
+    coefficients.zipWithIndex.map {
+      case (coefficient, index) => coefficient * positionPolynom(index)
+    }.sum
   }
 
   def subInterval(entity: AstronomicalObject, pointInTime: JulianTime): Int = {
@@ -56,8 +75,18 @@ class EphemerisService(quartets: List[(Int, Int, Int, Int)],
     val intervalStartTime = interval.startingTime
     val subIntervalDuration = interval.subIntervalDuration
 
-    2 * (pointInTime - (subInterval * subIntervalDuration + intervalStartTime)) / subIntervalDuration - 1
+    2 * ((pointInTime - (subInterval * subIntervalDuration + intervalStartTime)) / subIntervalDuration) - 1
   }
 
   def entity(entityId: EntityAssignments.AstronomicalObjects.Value) = entities.find(_.id == entityId.id).get
+
+  def chebychevAt(initialValues: (BigDecimal, BigDecimal), start: BigDecimal)(position: Int): BigDecimal = {
+    val cheby = chebychevAt(initialValues, start) _
+
+    position match {
+      case 0 => initialValues._1
+      case 1 => initialValues._2
+      case _ => 2 * start * cheby(position - 1) - cheby(position - 2)
+    }
+  }
 }

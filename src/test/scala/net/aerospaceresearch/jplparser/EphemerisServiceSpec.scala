@@ -45,6 +45,26 @@ class EphemerisServiceSpec extends FunSpec {
       expectResult(3)(service.subInterval(moon, 2433279.5))
     }
 
+    it("returns the position vector") {
+      val expectedPosition = (
+        0.236503372958839700,
+        -0.3069001738761292,
+        -0.18869511987388435
+        )
+
+      val position = service.position(Mercury, 2433264.5)
+      assert(position._1.toDouble === expectedPosition._1)
+      assert(position._2.toDouble === expectedPosition._2)
+      assert(position._3.toDouble === expectedPosition._3)
+    }
+
+    it("calculates the chebyshev position polynoms") {
+      val calculator = service.chebychevAt((1, -1), -1) _
+      assert(BigDecimal(1.0) === calculator(0))
+      assert(BigDecimal(-1.0) === calculator(1))
+      assert(BigDecimal(-1.0) === calculator(13))
+
+    }
   }
 
 }
