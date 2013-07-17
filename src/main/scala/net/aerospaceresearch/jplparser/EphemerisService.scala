@@ -22,9 +22,42 @@ package net.aerospaceresearch.jplparser
 import Types._
 
 class EphemerisService(quartets: List[(Int, Int, Int, Int)],
-                       entities: List[AstronomicalObject],
-                       timingData: (JulianTime, JulianTime, Double)) {
+                       val entities: List[AstronomicalObject],
+                       timingData: (JulianTime, JulianTime, Double),
+                       constants: Map[String, BigDecimal]
+                        ) {
 
+  val start = timingData._1
+  val end = timingData._2
+  val intervalDuration = timingData._3
 
+  /**
+   * convert km to au, using the values from the header file, with a fallback
+   * @param value value in km to convert
+   * @return
+   */
+  def inAu(implicit value: BigDecimal) = value / constants.get("AU").getOrElse(0.149597870699626200e+09)
 
+  def position(entity: EntityAssignments.AstronomicalObjects.Value, pointInTime: JulianTime): Position = {
+
+    ???
+  }
+
+  def subInterval(entity: AstronomicalObject, pointInTime: JulianTime): Int = {
+    val interval = entity.intervals.find(_.includes(pointInTime)).get
+
+    ((pointInTime - interval.startingTime) / interval.subIntervalDuration).toInt
+  }
+
+  def chebyshevTime(entityId: EntityAssignments.AstronomicalObjects.Value, pointInTime: JulianTime): Double = {
+    val interval = entity(entityId).intervals.find(_.includes(pointInTime)).get
+
+    val subInterval = this.subInterval(entity(entityId), pointInTime)
+    val intervalStartTime = interval.startingTime
+    val subIntervalDuration = interval.subIntervalDuration
+
+    2 * (pointInTime - (subInterval * subIntervalDuration + intervalStartTime)) / subIntervalDuration - 1
+  }
+
+  def entity(entityId: EntityAssignments.AstronomicalObjects.Value) = entities.find(_.id == entityId.id).get
 }

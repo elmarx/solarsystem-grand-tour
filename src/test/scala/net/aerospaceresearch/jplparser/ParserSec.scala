@@ -135,7 +135,7 @@ class ParserSec extends FunSpec {
 
       val intervals = List(List(timing, timing, x, x, x, y, y, y, z, z, z, other, other, other))
 
-      val expected = Interval(timing, timing, List(
+      val expected = Interval(timing.toDouble, timing.toDouble, List(
         CoefficientSet(List(
           (x, y, z),
           (x, y, z),

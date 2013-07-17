@@ -1,7 +1,5 @@
 package net.aerospaceresearch.jplparser
 
-import scala.collection.Map
-import scala.math.BigDecimal
 import Types._
 
 /**
@@ -63,7 +61,7 @@ object JplParser {
   /**
    * parse the triplets and augment them with the number of components per coefficient (for nutations,
    * there are only two components, for all other entities, there are three)
-   * @param s
+   * @param s the row group, as written in the header
    * @return
    */
   def parseQuartets(s: String): List[(Int, Int, Int, Int)] = {
@@ -71,28 +69,6 @@ object JplParser {
       case ((a, b, c), EntityAssignments.Nutations) => (a, b, c, 2)
       case ((a, b, c), _) => (a, b, c, 3)
     }
-  }
-
-  def parse(content: String): Map[String, BigDecimal] = {
-    val rawGroups = content.split( """GROUP\s*""")
-
-    parseConstantGroups(
-      rawGroups.find(_ matches """^%d\n.*""".format(Group.CONST_NAMES)).getOrElse(throw new IllegalArgumentException(
-        "The specified file does not include 'GROUP %d' for physical constant names".format(Group.CONST_NAMES)
-      )),
-      rawGroups.find(_ matches """^%d\n.*""".format(Group.CONST_VALUES)).getOrElse(throw new IllegalArgumentException(
-        "The specified file does not include 'GROUP %d' for physical constant values".format(Group.CONST_NAMES)
-      ))
-    )
-
-
-
-
-
-
-
-
-    ???
   }
 
   /**
@@ -143,9 +119,9 @@ object JplParser {
    * @return
    */
   def parseTimingData(s: String): (JulianTime, JulianTime, Double) = {
-    val list = normalize(s).split(" ").drop(1)
+    val list = normalize(s).split(" ").drop(1).map(_.toDouble)
 
-    (parseDecimal(list(0)), parseDecimal(list(1)), list(2).toDouble)
+    (list(0), list(1), list(2))
   }
 
 
@@ -183,7 +159,7 @@ object JplParser {
   /**
    * extracts from a grouped list of flat records the Intervals
    *
-   * @param intervals flat list of records, grouped by entity
+   * @param intervals flat list of records, grouped by entityId
    * @return Intervals with start and end, plus the corresponding sets of coefficients
    */
   def extractIntervalsForEntity(quartet: (Int, Int, Int, Int), intervals: List[List[BigDecimal]]): List[Interval] = {
@@ -195,7 +171,7 @@ object JplParser {
         val myRecords: List[List[BigDecimal]] = records.drop(firstRecord - 3).
           take(xCoefficients * xComponents * xCompleteSets).grouped(xCoefficients * xComponents).toList
 
-        Interval(startingTime, endingTime, myRecords.map(CoefficientSet(_, xCoefficients)))
+        Interval(startingTime.toDouble, endingTime.toDouble, myRecords.map(CoefficientSet(_, xCoefficients)))
       }
       case _ => throw new IllegalArgumentException("the data do not contain correct intervals")
     }
@@ -216,8 +192,8 @@ object JplParser {
 
   /**
    * This function puts together the pieces of parsing, and generates a service based on raw file input
-   * @param header
-   * @param data
+   * @param header the complete header.yyy as string
+   * @param data the data, at least complete intervals taken from ascpXXXX.yyy files
    */
   def generateService(header: String, data: String) = {
     def findGroup(id: Int)(s: String): Boolean =
@@ -239,8 +215,17 @@ object JplParser {
       ))
     )
 
+    val constants = parseConstantGroups(
+      rawGroups.find(findGroup(Group.CONST_NAMES)).getOrElse(throw new IllegalArgumentException(
+        "The specified file does not include 'GROUP %d' for physical constant names".format(Group.CONST_NAMES)
+      )),
+      rawGroups.find(findGroup(Group.CONST_VALUES)).getOrElse(throw new IllegalArgumentException(
+        "The specified file does not include 'GROUP %d' for physical constant values".format(Group.CONST_VALUES)
+      ))
+    )
+
     val objects = parseDataRecords(data, quartets)
 
-    new EphemerisService(quartets, objects, timingData)
+    new EphemerisService(quartets, objects, timingData, constants)
   }
 }

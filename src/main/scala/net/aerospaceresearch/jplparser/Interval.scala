@@ -21,4 +21,9 @@ package net.aerospaceresearch.jplparser
 
 import Types._
 
-case class Interval(startingTime: JulianTime, endingTime: JulianTime, sets: List[CoefficientSet])
+case class Interval(startingTime: JulianTime, endingTime: JulianTime, sets: List[CoefficientSet]) {
+
+  def includes(pointInTime: JulianTime) = startingTime <= pointInTime && pointInTime <= endingTime
+
+  def subIntervalDuration: JulianTime = (endingTime - startingTime) / sets.size
+}
