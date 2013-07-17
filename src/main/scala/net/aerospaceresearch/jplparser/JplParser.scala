@@ -27,7 +27,13 @@ object EntityAssignments {
  *
  */
 object JplParser {
-  def parseDecimal(s: String): BigDecimal = BigDecimal(s.replace("D", "E"))
+  def parseDecimal(s: String): BigDecimal =
+    try {
+      BigDecimal(s.replace("D", "E"))
+    }
+    catch {
+      case e: NumberFormatException => throw new IllegalArgumentException("Cannot parse %s".format(s), e)
+    }
 
   object Group extends Enumeration {
     val CONST_NAMES = 1040
