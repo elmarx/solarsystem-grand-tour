@@ -32,7 +32,7 @@ class EphemerisService(quartets: List[(Int, Int, Int, Int)],
   val intervalDuration = timingData._3
 
   /**
-   * convert km to au, using the values from the header file, with a fallback
+   * convert km to au, using the values from the header file, with a fallback value
    * @param value value in km to convert
    * @return
    */
@@ -42,6 +42,12 @@ class EphemerisService(quartets: List[(Int, Int, Int, Int)],
     (inAu(value._1), inAu(value._2), inAu(value._3))
 
 
+  /**
+   * calculate the position of an entity for a given pointInTime
+   * @param entityId id/index of the entity
+   * @param pointInTime pointInTime in Julian Time
+   * @return
+   */
   def position(entityId: EntityAssignments.AstronomicalObjects.Value, pointInTime: JulianTime): Position = {
     val entity = this.entity(entityId)
     val coefficientSet = entity.intervals.find(_.includes(pointInTime)).get.sets(subInterval(entity, pointInTime))
@@ -56,18 +62,36 @@ class EphemerisService(quartets: List[(Int, Int, Int, Int)],
     inAu((x, y, z))
   }
 
+  /**
+   * calculate the position of anything
+   * @param positionPolynom partial function, that provides the position polynoms
+   * @param coefficients list of coefficients to use for calculation
+   * @return
+   */
   def calculatePositionComponent(positionPolynom: (Int) => BigDecimal)(coefficients: List[BigDecimal]) = {
     coefficients.zipWithIndex.map {
       case (coefficient, index) => coefficient * positionPolynom(index)
     }.sum
   }
 
+  /**
+   * finds the index of the subInterval (i.e.: set of coefficients) responsible for the given point in Time
+   * @param entity entity with intervals and coefficient sets
+   * @param pointInTime a point in time for which the subInterval Index should by found
+   * @return
+   */
   def subInterval(entity: AstronomicalObject, pointInTime: JulianTime): Int = {
     val interval = entity.intervals.find(_.includes(pointInTime)).get
 
     ((pointInTime - interval.startingTime) / interval.subIntervalDuration).toInt
   }
 
+  /**
+   * calculate the chebyshev coefficient corresponding to the time
+   * @param entityId
+   * @param pointInTime
+   * @return
+   */
   def chebyshevTime(entityId: EntityAssignments.AstronomicalObjects.Value, pointInTime: JulianTime): Double = {
     val interval = entity(entityId).intervals.find(_.includes(pointInTime)).get
 
@@ -78,15 +102,27 @@ class EphemerisService(quartets: List[(Int, Int, Int, Int)],
     2 * ((pointInTime - (subInterval * subIntervalDuration + intervalStartTime)) / subIntervalDuration) - 1
   }
 
+  /**
+   * find an entity in the list of entities
+   * @param entityId id of the entity to find
+   * @return
+   */
   def entity(entityId: EntityAssignments.AstronomicalObjects.Value) = entities.find(_.id == entityId.id).get
 
-  def chebychevAt(initialValues: (BigDecimal, BigDecimal), start: BigDecimal)(position: Int): BigDecimal = {
-    val cheby = chebychevAt(initialValues, start) _
+  /**
+   * calculate the chebychev coefficient at index
+   * @param initialValues initial values for index 0 and index 1
+   * @param factor the factor to multiply the coefficients with
+   * @param index index to calculate for
+   * @return
+   */
+  def chebychevAt(initialValues: (BigDecimal, BigDecimal), factor: BigDecimal)(index: Int): BigDecimal = {
+    val cheby = chebychevAt(initialValues, factor) _
 
-    position match {
+    index match {
       case 0 => initialValues._1
       case 1 => initialValues._2
-      case _ => 2 * start * cheby(position - 1) - cheby(position - 2)
+      case _ => 2 * factor * cheby(index - 1) - cheby(index - 2)
     }
   }
 }
