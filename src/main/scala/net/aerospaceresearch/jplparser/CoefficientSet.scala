@@ -21,7 +21,12 @@ package net.aerospaceresearch.jplparser
 
 import Types._
 
-case class CoefficientSet(coefficients: List[Coefficient])
+case class CoefficientSet(coefficients: List[Coefficient]) {
+
+  def _1 : List[BigDecimal] = coefficients.map(_._1)
+  def _2 : List[BigDecimal] = coefficients.map(_._2)
+  def _3 : List[BigDecimal] = coefficients.map(_._3)
+}
 
 object CoefficientSet {
 
