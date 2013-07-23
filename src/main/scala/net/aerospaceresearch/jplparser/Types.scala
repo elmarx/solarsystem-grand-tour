@@ -24,5 +24,6 @@ object Types {
   type Coefficient = (BigDecimal, BigDecimal, BigDecimal)
   type JulianTime = Double
   type Position = (BigDecimal, BigDecimal, BigDecimal)
+  type Velocity = (BigDecimal, BigDecimal, BigDecimal)
 
 }
