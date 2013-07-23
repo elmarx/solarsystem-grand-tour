@@ -44,7 +44,7 @@ class EphemerisService(quartets: List[(Int, Int, Int, Int)],
 
   /**
    * calculate the position of an entity for a given pointInTime
-   * @param entityId id/index of the entity
+   * @param entityId id/exponent of the entity
    * @param pointInTime pointInTime in Julian Time
    * @return
    */
@@ -53,7 +53,7 @@ class EphemerisService(quartets: List[(Int, Int, Int, Int)],
     val coefficientSet = entity.intervals.find(_.includes(pointInTime)).get.sets(subInterval(entity, pointInTime))
     val time = chebyshevTime(entityId, pointInTime)
 
-    val calculator = calculatePositionComponent(chebychevAt((1, time), time)) _
+    val calculator = calculatePolynom(positionPolynomVariables(time)) _
 
     val x = calculator(coefficientSet.coefficients.map(_._1))
     val y = calculator(coefficientSet.coefficients.map(_._2))
@@ -62,20 +62,47 @@ class EphemerisService(quartets: List[(Int, Int, Int, Int)],
     inAu((x, y, z))
   }
 
+  def findCoefficientSet(entity: AstronomicalObject, pointInTime: JulianTime): CoefficientSet = {
+    entity.intervals.find(_.includes(pointInTime)).get.sets(subInterval(entity, pointInTime))
+  }
+
+  def velocity(entityId: EntityAssignments.AstronomicalObjects.Value, pointInTime: JulianTime): Velocity = {
+    val entity: AstronomicalObject = this.entity(entityId)
+
+    val coefficientSet = findCoefficientSet(entity, pointInTime)
+    val time = chebyshevTime(entityId, pointInTime)
+
+    /*
+     * The next line accounts for differentiation of the iterative
+     * formula with respect to chebyshev time. Essentially, if dx/dt
+     * = (dx/dct) times (dct/dt), the next line includes the factor
+     * (dct/dt) so that the units are km/day.
+     */
+    def calculator(coefficients: List[BigDecimal]): BigDecimal =
+      calculatePolynom(velocityPolynomVariables(time))(coefficients) * (2 * entity.numberOfCompleteSets / intervalDuration)
+
+
+    val x = calculator(coefficientSet._1)
+    val y = calculator(coefficientSet._2)
+    val z = calculator(coefficientSet._3)
+
+    inAu(x, y, z)
+  }
+
   /**
-   * calculate the position of anything
-   * @param positionPolynom partial function, that provides the position polynoms
+   * calculate any polynom by summing up the product of coefficients and variables
+   * @param variableValue function, that provides the values for variables with a given exponent
    * @param coefficients list of coefficients to use for calculation
    * @return
    */
-  def calculatePositionComponent(positionPolynom: (Int) => BigDecimal)(coefficients: List[BigDecimal]) = {
+  def calculatePolynom(variableValue: (Int) => BigDecimal)(coefficients: List[BigDecimal]) = {
     coefficients.zipWithIndex.map {
-      case (coefficient, index) => coefficient * positionPolynom(index)
+      case (coefficient, index) => coefficient * variableValue(index)
     }.sum
   }
 
   /**
-   * finds the index of the subInterval (i.e.: set of coefficients) responsible for the given point in Time
+   * finds the exponent of the subInterval (i.e.: set of coefficients) responsible for the given point in Time
    * @param entity entity with intervals and coefficient sets
    * @param pointInTime a point in time for which the subInterval Index should by found
    * @return
@@ -88,8 +115,8 @@ class EphemerisService(quartets: List[(Int, Int, Int, Int)],
 
   /**
    * calculate the chebyshev coefficient corresponding to the time
-   * @param entityId
-   * @param pointInTime
+   * @param entityId id of the entity to calculate the chebyshev time coefficient
+   * @param pointInTime the desired point in time in julian time
    * @return
    */
   def chebyshevTime(entityId: EntityAssignments.AstronomicalObjects.Value, pointInTime: JulianTime): Double = {
@@ -107,22 +134,39 @@ class EphemerisService(quartets: List[(Int, Int, Int, Int)],
    * @param entityId id of the entity to find
    * @return
    */
-  def entity(entityId: EntityAssignments.AstronomicalObjects.Value) = entities.find(_.id == entityId.id).get
+  def entity(entityId: EntityAssignments.AstronomicalObjects.Value): AstronomicalObject = entities.find(_.id == entityId.id).get
 
   /**
-   * calculate the chebychev coefficient at index
-   * @param initialValues initial values for index 0 and index 1
-   * @param factor the factor to multiply the coefficients with
-   * @param index index to calculate for
+   * calculate the chebychev coefficient for an exponent
+   * @param chebyshevTime time of the position polynom to calculate
+   * @param exponent exponent to calculate for
    * @return
    */
-  def chebychevAt(initialValues: (BigDecimal, BigDecimal), factor: BigDecimal)(index: Int): BigDecimal = {
-    val cheby = chebychevAt(initialValues, factor) _
+  def positionPolynomVariables(chebyshevTime: BigDecimal)(exponent: Int): BigDecimal = {
+    val cheby = positionPolynomVariables(chebyshevTime) _
 
-    index match {
-      case 0 => initialValues._1
-      case 1 => initialValues._2
-      case _ => 2 * factor * cheby(index - 1) - cheby(index - 2)
+    exponent match {
+      case 0 => 1
+      case 1 => chebyshevTime
+      case _ => 2 * chebyshevTime * cheby(exponent - 1) - cheby(exponent - 2)
+    }
+  }
+
+  /**
+   *
+   * @param chebyshevTime
+   * @param exponent
+   * @return
+   */
+  def velocityPolynomVariables(chebyshevTime: BigDecimal)(exponent: Int): BigDecimal = {
+    val velocity = velocityPolynomVariables(chebyshevTime) _
+    val position = positionPolynomVariables(chebyshevTime) _
+
+    exponent match {
+      case 0 => 0
+      case 1 => 1
+      case 2 => 4 * chebyshevTime
+      case _ => 2 * chebyshevTime * velocity(exponent - 1) + 2 * position(exponent - 1) - velocity(exponent - 2)
     }
   }
 }

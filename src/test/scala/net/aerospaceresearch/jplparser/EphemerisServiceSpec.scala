@@ -45,6 +45,14 @@ class EphemerisServiceSpec extends FunSpec {
       expectResult(3)(service.subInterval(moon, 2433279.5))
     }
 
+    it("calculates the chebyshev position polynoms") {
+      val calculator = service.positionPolynomVariables(-1) _
+      assert(BigDecimal(1.0) === calculator(0))
+      assert(BigDecimal(-1.0) === calculator(1))
+      assert(BigDecimal(-1.0) === calculator(13))
+
+    }
+
     it("returns the position vector") {
       val expectedPosition = (
         0.236503372958839700,
@@ -58,13 +66,29 @@ class EphemerisServiceSpec extends FunSpec {
       assert(position._3.toDouble === expectedPosition._3)
     }
 
-    it("calculates the chebyshev position polynoms") {
-      val calculator = service.chebychevAt((1, -1), -1) _
-      assert(BigDecimal(1.0) === calculator(0))
-      assert(BigDecimal(-1.0) === calculator(1))
-      assert(BigDecimal(-1.0) === calculator(13))
+    it("returs the chebyshev velocity polynoms") {
+      val calculator = service.velocityPolynomVariables(-1) _
 
+      assert(BigDecimal(-4) === calculator(2))
+      assert(BigDecimal(-64) === calculator(8))
+      assert(BigDecimal(169) === calculator(13))
     }
+
+    it("returns the velocity vector") {
+      val expectedVelocity = (
+        0.01790969458602632,
+        0.015536097599746987,
+        0.006437368692973857
+      )
+
+      val velocity = service.velocity(Mercury, 2433264.5)
+
+      assert(velocity._1.toDouble === expectedVelocity._1)
+      assert(velocity._2.toDouble === expectedVelocity._2)
+      assert(velocity._3.toDouble === expectedVelocity._3)
+    }
+
+
   }
 
 }
