@@ -29,15 +29,35 @@ import com.github.nscala_time.time.Imports._
  */
 object DataReader {
   val ephemeridesSet = 423
+  val folderName = s"de$ephemeridesSet"
+  val headerFile = s"header.$ephemeridesSet"
 
   def getFilenameForJulianTime(pointInTime: Types.JulianTime): String = {
     val epochMillis = DateTimeUtils.fromJulianDay(pointInTime)
     val year: Int = new DateTime(epochMillis).year.get
     val interval = year - (year % 50)
 
-    "ascp%d.%d".format(interval, ephemeridesSet)
+    s"ascp$interval.$ephemeridesSet".format(interval, ephemeridesSet)
   }
 
+
+
+
+
+  def currentEphemerisService: EphemerisService = {
+    val headerSource = scala.io.Source.fromFile(s"$folderName/$headerFile")
+    val headerContent = headerSource.getLines mkString "\n"
+    headerSource.close()
+
+    val dataFilename = getFilenameForJulianTime(DateTimeUtils.toJulianDay(DateTime.now.toInstant.getMillis))
+
+    val dataSource = io.Source.fromFile(s"$folderName/$dataFilename")
+    val dataContent = dataSource.getLines mkString "\n"
+    dataSource.close()
+
+
+    JplParser.generateService(headerContent, dataContent)
+  }
 
 
 
