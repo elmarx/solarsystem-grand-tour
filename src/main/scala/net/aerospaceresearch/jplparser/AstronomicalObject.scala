@@ -19,4 +19,8 @@
 
 package net.aerospaceresearch.jplparser
 
-case class AstronomicalObject(id: Int, intervals: List[Interval])
+case class AstronomicalObject(id: Int, intervals: List[Interval]) {
+
+  def numberOfCompleteSets = intervals(0).sets.size
+
+}
