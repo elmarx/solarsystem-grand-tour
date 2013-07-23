@@ -26,7 +26,7 @@ import net.aerospaceresearch.jplparser.data.{ExampleHeaderFile, Ascp1950TestData
 /**
  * Specification for the JPL Parser
  */
-class ParserSec extends FunSpec {
+class ParserSpec extends FunSpec {
 
   describe("The JPL Parser") {
 
