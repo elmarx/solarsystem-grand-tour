@@ -30,12 +30,19 @@ case class CoefficientSet(coefficients: List[Coefficient]) {
 
 object CoefficientSet {
 
-  def apply(coefficents: List[BigDecimal], xCoefficients: Int): CoefficientSet =
+  /**
+   * factory method to create a CoefficientSet based on a flat list of coefficients,
+   * and the number of coefficients in the set
+   * @param coefficients flat list of all coefficients, all components
+   * @param xCoefficients the number of coefficients per component
+   * @return
+   */
+  def apply(coefficients: List[BigDecimal], xCoefficients: Int): CoefficientSet =
     CoefficientSet(
       (
-        coefficents.slice(0, xCoefficients),
-        coefficents.slice(xCoefficients, xCoefficients * 2),
-        coefficents.slice(xCoefficients * 2, xCoefficients * 3)
+        coefficients.slice(0, xCoefficients),
+        coefficients.slice(xCoefficients, xCoefficients * 2),
+        coefficients.slice(xCoefficients * 2, xCoefficients * 3)
       ).zipped.toList
     )
 

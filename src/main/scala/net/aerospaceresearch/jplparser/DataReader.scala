@@ -32,6 +32,11 @@ object DataReader {
   val folderName = s"de$ephemeridesSet"
   val headerFile = s"header.$ephemeridesSet"
 
+  /**
+   * get the name of the ephemerides file for a given point in time
+   * @param pointInTime a point in time in julian time
+   * @return
+   */
   def getFilenameForJulianTime(pointInTime: Types.JulianTime): String = {
     val epochMillis = DateTimeUtils.fromJulianDay(pointInTime)
     val year: Int = new DateTime(epochMillis).year.get
@@ -41,16 +46,19 @@ object DataReader {
   }
 
 
-
-
-
+  /**
+   * generate an EphemerisService for now (now as in "DateTime.now")
+   * @return
+   */
   def currentEphemerisService: EphemerisService = {
+    // read header
     val headerSource = scala.io.Source.fromFile(s"$folderName/$headerFile")
     val headerContent = headerSource.getLines mkString "\n"
     headerSource.close()
 
     val dataFilename = getFilenameForJulianTime(DateTimeUtils.toJulianDay(DateTime.now.toInstant.getMillis))
 
+    // read data
     val dataSource = io.Source.fromFile(s"$folderName/$dataFilename")
     val dataContent = dataSource.getLines mkString "\n"
     dataSource.close()
