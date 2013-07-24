@@ -37,7 +37,7 @@ object DataReader {
     val year: Int = new DateTime(epochMillis).year.get
     val interval = year - (year % 50)
 
-    s"ascp$interval.$ephemeridesSet".format(interval, ephemeridesSet)
+    s"ascp$interval.$ephemeridesSet"
   }
 
 
