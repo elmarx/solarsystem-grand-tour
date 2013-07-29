@@ -44,7 +44,7 @@ class EphemerisService(quartets: List[(Int, Int, Int, Int)],
 
   /**
    * calculate the position of an entity for a given pointInTime
-   * @param entityId id/exponent of the entity
+   * @param entityId id/index of the entity
    * @param pointInTime pointInTime in Julian Time
    * @return
    */
