@@ -21,7 +21,7 @@ object JplParser {
       case e: NumberFormatException => throw new IllegalArgumentException("Cannot parse %s".format(s), e)
     }
 
-  object Group extends Enumeration {
+  object Group {
     val CONST_NAMES = 1040
     val CONST_VALUES = 1041
     val TRIPLETS = 1050
