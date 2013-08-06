@@ -54,11 +54,17 @@ class EphemerisServiceSpec extends FunSpec {
     }
 
     it("returns the position vector") {
-      val expectedPosition = (
+      val expectedPositionInAu = (
         0.236503372958839700,
         -0.3069001738761292,
         -0.18869511987388435
         )
+
+      val expectedPosition = (
+         3.538040100792197E7,
+         -4.591161252921398E7,
+         -2.8228388144543815E7
+      )
 
       val position = service.position(Mercury, 2433264.5)
       assert(position._1.toDouble === expectedPosition._1)
@@ -75,10 +81,16 @@ class EphemerisServiceSpec extends FunSpec {
     }
 
     it("returns the velocity vector") {
-      val expectedVelocity = (
+      val expectedVelocityInAu = (
         0.01790969458602632,
         0.015536097599746987,
         0.006437368692973857
+      )
+
+      val expectedVelocity = (
+        2679252.174950161,
+        2324167.119903723,
+        963016.6493773247
       )
 
       val velocity = service.velocity(Mercury, 2433264.5)
