@@ -35,7 +35,7 @@ object Formulas {
 
 
   def gravitationalForces(a: Body)(b: Body): DenseVector[Double] =
-    (b.r - a.r) * (G * a.mass * b.mass) * (1 / BigDecimal(norm(b.r - a.r)).pow(3).toDouble)
+    (b.r - a.r) * (G * a.mass * b.mass) / BigDecimal(norm(b.r - a.r)).pow(3).toDouble
 
   def acceleration(a: Body, bodies: List[Body]): DenseVector[Double] = a.forcesExperienced(bodies).reduce(_ + _)
 }
