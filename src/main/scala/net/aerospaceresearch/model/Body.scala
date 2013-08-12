@@ -43,4 +43,6 @@ case class Body(mass: Double, r: DenseVector[Double], v: DenseVector[Double]) {
     val formula = Formulas.gravitationalForces(this) _
     otherBodies.filterNot(_ == this) map formula
   }
+
+  def acceleration(otherBodies: List[Body]): DenseVector[Double] = Formulas.acceleration(this, otherBodies)
 }

@@ -29,14 +29,15 @@ import net.aerospaceresearch.jplparser.Types
  * Time: 23:34
  */
 class SolarSystem(val bodies: List[Body], val centerMass: Body, val time: Types.JulianTime) {
-
+  val allBodies = centerMass :: bodies
 
   def nextStep(time: Int): SolarSystem = {
     this
   }
 
-  def forces(): List[List[DenseVector[Double]]] =
-    bodies.map(b => b.forcesExperienced(bodies))
+  def forces: List[List[DenseVector[Double]]] = allBodies.map(_.forcesExperienced(bodies))
+
+  def accelerations: List[DenseVector[Double]] = allBodies.map(_.acceleration(allBodies))
 
 
 }
