@@ -41,6 +41,6 @@ case class Body(mass: Double, r: DenseVector[Double], v: DenseVector[Double]) {
   def forcesExperienced(otherBodies: List[Body]): List[DenseVector[Double]] = {
     // f = [G * m1 * m2 % (R2 - R1)] / ||R2 - R1||^3
     val formula = Formulas.gravitationalForces(this) _
-    otherBodies.map(formula)
+    otherBodies.filterNot(_ == this) map formula
   }
 }
