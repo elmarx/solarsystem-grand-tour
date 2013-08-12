@@ -35,9 +35,9 @@ class SolarSystem(val bodies: List[Body], val centerMass: Body, val time: Types.
     this
   }
 
-  def forces: List[List[DenseVector[Double]]] = allBodies.map(_.forcesExperienced(bodies))
+  def forces: List[List[DenseVector[Double]]] = bodies.map(_.forcesExperienced(allBodies))
 
-  def accelerations: List[DenseVector[Double]] = allBodies.map(_.acceleration(allBodies))
+  def accelerations: List[DenseVector[Double]] = bodies.map(_.acceleration(allBodies))
 
 
 }
