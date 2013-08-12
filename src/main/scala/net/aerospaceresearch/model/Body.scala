@@ -32,9 +32,9 @@ import net.aerospaceresearch.math.Formulas
  *
  * @param r position, as vector
  * @param mass the mass of the
- * @param a acceleration
+ * @param v velocity
  */
-class Body(val mass: Double, val r: DenseVector[Double], val a: DenseVector[Double]) {
+case class Body(mass: Double, r: DenseVector[Double], v: DenseVector[Double]) {
 
   // def accelerate - Beschleunigen oder bremsen mit eigenem Antrieb
 

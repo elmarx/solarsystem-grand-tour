@@ -20,6 +20,7 @@
 package net.aerospaceresearch.model
 
 import breeze.linalg.DenseVector
+import net.aerospaceresearch.jplparser.Types
 
 /**
  * This class presents a solar system to a given point in time
@@ -27,7 +28,7 @@ import breeze.linalg.DenseVector
  * Date: 17.06.13
  * Time: 23:34
  */
-class SolarSystem(val bodies: List[Body], val centerMass: Body, val time: Int) {
+class SolarSystem(val bodies: List[Body], val centerMass: Body, val time: Types.JulianTime) {
 
 
   def nextStep(time: Int): SolarSystem = {

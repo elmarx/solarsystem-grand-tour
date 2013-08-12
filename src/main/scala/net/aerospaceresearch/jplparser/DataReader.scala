@@ -21,6 +21,9 @@ package net.aerospaceresearch.jplparser
 
 import org.joda.time.DateTimeUtils
 import com.github.nscala_time.time.Imports._
+import EntityAssignments.AstronomicalObjects._
+import net.aerospaceresearch.model.{Body, SolarSystem}
+import breeze.linalg.DenseVector
 
 /**
  * reads files based on the julian time given
@@ -28,6 +31,24 @@ import com.github.nscala_time.time.Imports._
  *
  */
 object DataReader {
+  def current() = new DataReader(DateTimeUtils.toJulianDay(DateTime.now.toInstant.getMillis))
+}
+
+class DataReader(val pointInTime: Double) {
+  lazy val masses = Map(
+    Mercury -> BigDecimal("3.3022E23"),
+    Venus -> BigDecimal("4.869E24"),
+    Earth_Moon_Barycenter -> BigDecimal("6.045678E24"),
+    Mars -> BigDecimal("6.4191E23"),
+    Jupiter -> BigDecimal("1.8988E27"),
+    Saturn -> BigDecimal("5.685E26"),
+    Uranus -> BigDecimal("8.6625E25"),
+    Neptune -> BigDecimal("1.0278E26"),
+    Pluto -> BigDecimal("1.314E22"),
+    Moon_Geocentric -> BigDecimal("7.3459E22"),
+    Sun -> BigDecimal("1.988435E30")
+  )
+
   val ephemeridesSet = 423
   val folderName = s"de$ephemeridesSet"
   val headerFile = s"header.$ephemeridesSet"
@@ -47,26 +68,48 @@ object DataReader {
 
 
   /**
-   * generate an EphemerisService for now (now as in "DateTime.now")
+   * generate an EphemerisService for the pointInTime
    * @return
    */
-  def currentEphemerisService: EphemerisService = {
-    // read header
-    val headerSource = scala.io.Source.fromFile(s"$folderName/$headerFile")
+  lazy val ephemerisService: EphemerisService = JplParser.generateService(headerContent, currentDataContent)
+
+  lazy val headerContent = {
+    val headerSource = io.Source.fromFile(s"$folderName/$headerFile")
     val headerContent = headerSource.getLines mkString "\n"
     headerSource.close()
+    headerContent
+  }
 
-    val dataFilename = getFilenameForJulianTime(DateTimeUtils.toJulianDay(DateTime.now.toInstant.getMillis))
+  lazy val currentDataContent = {
+    val dataFilename = getFilenameForJulianTime(pointInTime)
 
     // read data
     val dataSource = io.Source.fromFile(s"$folderName/$dataFilename")
     val dataContent = dataSource.getLines mkString "\n"
     dataSource.close()
-
-
-    JplParser.generateService(headerContent, dataContent)
+    dataContent
   }
 
+  def system: SolarSystem = {
+    val sun = Body(masses(Sun).toDouble, DenseVector(0, 0, 0), DenseVector(0, 0, 0))
+    val bodies = masses.filter{
+      case(Sun, _) => false
+      case(Moon_Geocentric,_ ) => false
+      case _ => true
+    }.map { case (entity,
+    _) => entity } map toBody
 
+    new SolarSystem(bodies.toList, sun, pointInTime)
+  }
 
+  def toBody(entity: Value): Body = {
+    val (rX, rY, rZ) = ephemerisService.position(entity, pointInTime)
+    val (vX, vY, vZ) = ephemerisService.velocity(entity, pointInTime)
+
+    Body(
+      masses(entity).toDouble,
+      DenseVector(rX.toDouble, rY.toDouble, rZ.toDouble),
+      DenseVector(vX.toDouble, vY.toDouble, vZ.toDouble)
+    )
+  }
 }
