@@ -55,7 +55,7 @@ case class Body(identity: AstronomicalObjects.Value, mass: Double, r0: DenseVect
    * @return
    */
   def nextStep(s: SolarSystem, leap: Double) = {
-    val otherBodies = s.allBodies.filterNot(_ != this)
+    val otherBodies = s.allBodies.filter(_ != this)
     val a = acceleration(otherBodies)
     val v1 = Formulas.velocity(v0, a, leap)
     val r1 = Formulas.position(r0, v1, leap)
