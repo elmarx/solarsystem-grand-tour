@@ -23,6 +23,7 @@ import net.aerospaceresearch.math
 import breeze.linalg.DenseVector
 import net.aerospaceresearch.math.Formulas
 import net.aerospaceresearch.jplparser.EntityAssignments.AstronomicalObjects
+import scala.collection.parallel.immutable.ParSeq
 
 /**
  * A body represents a planet, a probe, a moon, any particle etc.
@@ -37,19 +38,31 @@ import net.aerospaceresearch.jplparser.EntityAssignments.AstronomicalObjects
  */
 case class Body(identity: AstronomicalObjects.Value, mass: Double, r0: DenseVector[Double], v0: DenseVector[Double]) {
 
-  // def accelerate - Beschleunigen oder bremsen mit eigenem Antrieb
-
-  def forcesExperienced(otherBodies: List[Body]): List[DenseVector[Double]] = {
+  def forcesExperienced(otherBodies: ParSeq[Body]): ParSeq[DenseVector[Double]] = {
     // f = [G * m1 * m2 % (R2 - R1)] / ||R2 - R1||^3
     val formula = Formulas.gravitationalForces(this) _
     otherBodies.filterNot(_ == this) map formula
   }
 
-  def acceleration(otherBodies: List[Body]): DenseVector[Double] = Formulas.acceleration(this, otherBodies)
+  def acceleration(otherBodies: ParSeq[Body]): DenseVector[Double] =
+    Formulas.acceleration(this, otherBodies)
 
-  def v1(otherBodies: List[Body]): DenseVector[Double] = Formulas.velocity(this, otherBodies)
+  /**
+   * calculate values for t1, and advance a step
+   *
+   * @param s solar system containing all the bodies influencing this body
+   * @param leap δt between t0 and t1
+   * @return
+   */
+  def nextStep(s: SolarSystem, leap: Double) = {
+    val otherBodies = s.allBodies.filterNot(_ != this)
+    val a = acceleration(otherBodies)
+    val v1 = Formulas.velocity(v0, a, leap)
+    val r1 = Formulas.position(r0, v1, leap)
 
-  def r1(otherBodies: List[Body]): DenseVector[Double] =
-    Formulas.position(this, otherBodies)
+    Body(identity, mass, r1, v1)
+  }
+
+
 
 }

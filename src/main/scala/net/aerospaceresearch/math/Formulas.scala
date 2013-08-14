@@ -22,6 +22,7 @@ package net.aerospaceresearch.math
 import net.aerospaceresearch.model.Body
 import breeze.linalg._
 import net.aerospaceresearch.jplparser.Types.JulianTime
+import scala.collection.parallel.immutable.ParSeq
 
 
 /**
@@ -38,8 +39,6 @@ object Formulas {
   val G: Double = 6.67259e-20 // G taken from "orbitbook"
   // val G: Double = 6.67384e-20 // G according to wikipedia
 
-  val defaultδt = 1.0 / (24 * 60 * 60) / 1 // one second
-
   /**
    *
    * @param a
@@ -52,38 +51,38 @@ object Formulas {
   /**
    * the acceleration is the sum of all forces, divided by the mass of the body a itself
    * @param a
-   * @param bodies
+   * @param otherBodies
    * @return
    */
-  def acceleration(a: Body, bodies: List[Body]): DenseVector[Double] =
-    a.forcesExperienced(bodies).reduce(_ + _) / a.mass
+  def acceleration(a: Body, otherBodies: ParSeq[Body]): DenseVector[Double] =
+    a.forcesExperienced(otherBodies).reduce(_ + _) / a.mass
 
   /**
    *
+   * @param v0
    * @param a
-   * @param bodies
    * @param δt
    * @return
    */
-  def velocity(a: Body, bodies: List[Body], δt: Double = defaultδt): DenseVector[Double] = {
-    def f(velocity: DenseVector[Double], t: Double): DenseVector[Double] =
-      velocity + a.acceleration(bodies) * t
+  def velocity(v0: DenseVector[Double], a: DenseVector[Double], δt: Double): DenseVector[Double] = {
+    def f(velocity: DenseVector[Double], t: Double): DenseVector[Double] = velocity + a * t
 
-    rungeKutta4(f, a.v0, δt)
+    rungeKutta4(f, v0, δt)
   }
 
+
   /**
    *
-   * @param a
-   * @param bodies
+   * @param r0
+   * @param v1
    * @param δt
    * @return
    */
-  def position(a: Body, bodies: List[Body], δt: Double = defaultδt): DenseVector[Double] = {
+  def position(r0: DenseVector[Double], v1: DenseVector[Double], δt: Double): DenseVector[Double] = {
     def f(pos: DenseVector[Double], t: Double): DenseVector[Double] =
-      pos + a.v0 * t
+      pos + v1 * t
 
-    rungeKutta4(f, a.r0, δt)
+    rungeKutta4(f, r0, δt)
   }
 
   /**

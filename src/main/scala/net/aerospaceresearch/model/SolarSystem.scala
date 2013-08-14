@@ -19,8 +19,7 @@
 
 package net.aerospaceresearch.model
 
-import breeze.linalg.DenseVector
-import net.aerospaceresearch.jplparser.Types
+import net.aerospaceresearch.jplparser.Types._
 import scala.collection.parallel.immutable.ParSeq
 
 /**
@@ -29,31 +28,8 @@ import scala.collection.parallel.immutable.ParSeq
  * Date: 17.06.13
  * Time: 23:34
  */
-class SolarSystem(val bodies: List[Body], val centerMass: Body, val time: Types.JulianTime) {
-  val allBodies = centerMass :: bodies
+case class SolarSystem(bodies: ParSeq[Body], centerMass: Body, time: JulianTime) {
+  val allBodies = bodies :+ centerMass
 
-  def nextStep(time: Int): SolarSystem = {
-    this
-  }
-
-  def forces: ParSeq[List[DenseVector[Double]]] =
-    bodies.par.map {
-      body => body.forcesExperienced(allBodies.filter(_ != body))
-    }
-
-  def accelerations: ParSeq[DenseVector[Double]] =
-    bodies.par.map {
-      body => body.acceleration(allBodies.filter(_ != body))
-    }
-
-  def velocities: ParSeq[DenseVector[Double]] =
-    bodies.par.map {
-      body => body.v1(allBodies.filter(_ != body))
-    }
-
-  def positions: ParSeq[DenseVector[Double]] =
-    bodies.par.map {
-      body => body.r1(allBodies.filter(_ != body))
-    }
-
+  def nextStep(leap: Double): SolarSystem = SolarSystem(allBodies.map(_.nextStep(this, leap)), centerMass, time + leap)
 }

@@ -96,10 +96,9 @@ class DataReader(val pointInTime: Double) {
       case(Sun, _) => false
       case(Moon_Geocentric,_ ) => false
       case _ => true
-    }.map { case (entity,
-    _) => entity } map toBody
+    }.map { case (entity, _) => entity } map toBody
 
-    new SolarSystem(bodies.toList, sun, pointInTime)
+    new SolarSystem(bodies.toList.par, sun, pointInTime)
   }
 
   def toBody(entity: Value): Body = {
