@@ -21,6 +21,7 @@ package net.aerospaceresearch.math
 
 import net.aerospaceresearch.model.Body
 import breeze.linalg._
+import net.aerospaceresearch.jplparser.Types.JulianTime
 
 
 /**
@@ -31,11 +32,15 @@ import breeze.linalg._
  */
 object Formulas {
 
-  val G: Double = 6.67384E-11
+  type Derivative[T] = (DenseVector[T], JulianTime) => DenseVector[T]
+
+  // gravitational constant (km^3/kg/s^2)
+  val G: Double = 6.67259e-20 // G taken from "orbitbook"
+  // val G: Double = 6.67384e-20 // G according to wikipedia
 
 
   def gravitationalForces(a: Body)(b: Body): DenseVector[Double] =
-    (b.r - a.r) * (G * a.mass * b.mass) / BigDecimal(norm(b.r - a.r)).pow(3).toDouble
+    (b.r0 - a.r0) * (G * a.mass * b.mass) / BigDecimal(norm(b.r0 - a.r0)).pow(3).toDouble
 
   /**
    * the acceleration is the sum of all forces, divided by the mass of the body a itself
@@ -45,4 +50,64 @@ object Formulas {
    */
   def acceleration(a: Body, bodies: List[Body]): DenseVector[Double] =
     a.forcesExperienced(bodies).reduce(_ + _) / a.mass
+
+  def velocity(a: Body, bodies: List[Body]): DenseVector[Double] = {
+    val δt: JulianTime = 1.0 / (24 * 60 * 60) / 10  // step size is 0.5 seconds
+
+    /**
+     * calculate v according to euler
+     * @param velocity
+     * @param t
+     */
+    def f(velocity: DenseVector[Double], t: JulianTime): DenseVector[Double] =
+      velocity + a.acceleration(bodies) * δt
+
+    val t0 = 0
+    val t1 = 1.0 / (24 * 60) // one minute
+
+    val v0 = a.v0
+
+    rungeKutta4(f, v0, t0, t1, δt)
+  }
+
+  def position(a: Body, bodies: List[Body]): DenseVector[Double] = {
+    val δt: JulianTime = 1.0 / (24 * 60 * 60) / 10  // step size is 1 seconds
+
+    val t0 = 0
+    val t1 = 1.0 / (24 * 60) // one minute
+
+    val r0 = a.r0
+
+    def f(pos: DenseVector[Double], t: JulianTime): DenseVector[Double] =
+      pos + a.v0 * δt
+
+
+    rungeKutta4(f, r0, t0, t1, δt)
+  }
+
+  /**
+   *
+   * @param f derivative function
+   * @param x0 initial value at beginning of the interval, i.e. at t0
+   * @param t0 initial time
+   * @param t1 time in question
+   * @param δt step size
+   * @return x1: value of x at t1
+   */
+  def rungeKutta4(f: Derivative[Double], x0: DenseVector[Double], t0: JulianTime, t1: JulianTime,
+                  δt: Double): DenseVector[Double] = {
+    val ka: DenseVector[Double] = f(x0, t0)
+
+    val kb = f(x0 + ka * (δt / 2), t0 + δt / 2)
+    val kc = f(x0 + (kb * (δt / 2)), t0 + δt / 2)
+    val kd = f(x0 + kc * δt, t0 + δt)
+
+    val k = (ka + (kb + kc) * 2.0 + kd) / 6.0
+
+    val x1 = x0 + k * δt
+
+    if(t0 < t1) rungeKutta4(f, x1, t0 + δt, t1, δt)
+    else x1
+  }
+
 }

@@ -91,7 +91,7 @@ class DataReader(val pointInTime: Double) {
   }
 
   def system: SolarSystem = {
-    val sun = Body(masses(Sun).toDouble, DenseVector(0, 0, 0), DenseVector(0, 0, 0))
+    val sun = Body(Sun, masses(Sun).toDouble, DenseVector(0, 0, 0), DenseVector(0, 0, 0))
     val bodies = masses.filter{
       case(Sun, _) => false
       case(Moon_Geocentric,_ ) => false
@@ -107,6 +107,7 @@ class DataReader(val pointInTime: Double) {
     val (vX, vY, vZ) = ephemerisService.velocity(entity, pointInTime)
 
     Body(
+      entity,
       masses(entity).toDouble,
       DenseVector(rX.toDouble, rY.toDouble, rZ.toDouble),
       DenseVector(vX.toDouble, vY.toDouble, vZ.toDouble)

@@ -19,8 +19,11 @@
 
 package net.aerospaceresearch
 
-import model._
-import breeze.linalg._
+import net.aerospaceresearch.jplparser.DataReader
+import breeze.linalg.DenseVector
+import org.joda.time.DateTime
+import scala.collection.parallel.immutable.ParSeq
+import net.aerospaceresearch.model.Body
 
 
 /**
@@ -32,13 +35,25 @@ import breeze.linalg._
 object Main {
 
   def main(args: Array[String]) {
-    val centerMass = new Body(10000, DenseVector(0, 0, 0), DenseVector(0, 0, 0))
+    val startedAt = DateTime.now.toInstant.getMillis
 
-    val bodies = List(
-      new Body(1, DenseVector(1, 1 ,1), DenseVector(2, 2 , 2)),
-      new Body(1, DenseVector(2, 1, 1), DenseVector(2, 2, 2))
-    )
+    val system = DataReader.current().system
+    val velocities = system.velocities
+    val positions = system.positions
 
-    val system = new SolarSystem(Nil, centerMass, 0)
+
+    val header = List("Planet", "vX", "vY", "vZ", "rX", "rY", "rZ")
+
+    println(header.mkString(";"))
+
+    val data: List[(Body, (DenseVector[Double], DenseVector[Double]))] = system.bodies.zip(velocities.zip(positions))
+    data.map { case (a, (v, r)) =>
+      List(a.identity.toString, v(0), v(1), v(2), r(0), r(1), r(2)).mkString(";")
+    }.foreach(println)
+
+
+    val time = DateTime.now.toInstant.getMillis - startedAt
+
+    println("This task ran " + time + " milliseconds")
   }
 }

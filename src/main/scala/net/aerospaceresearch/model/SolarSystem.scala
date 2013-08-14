@@ -21,6 +21,7 @@ package net.aerospaceresearch.model
 
 import breeze.linalg.DenseVector
 import net.aerospaceresearch.jplparser.Types
+import scala.collection.parallel.immutable.ParSeq
 
 /**
  * This class presents a solar system to a given point in time
@@ -35,9 +36,24 @@ class SolarSystem(val bodies: List[Body], val centerMass: Body, val time: Types.
     this
   }
 
-  def forces: List[List[DenseVector[Double]]] = bodies.map(_.forcesExperienced(allBodies))
+  def forces: ParSeq[List[DenseVector[Double]]] =
+    bodies.par.map {
+      body => body.forcesExperienced(allBodies.filter(_ != body))
+    }
 
-  def accelerations: List[DenseVector[Double]] = bodies.map(_.acceleration(allBodies))
+  def accelerations: ParSeq[DenseVector[Double]] =
+    bodies.par.map {
+      body => body.acceleration(allBodies.filter(_ != body))
+    }
 
+  def velocities: ParSeq[DenseVector[Double]] =
+    bodies.par.map {
+      body => body.v1(allBodies.filter(_ != body))
+    }
+
+  def positions: ParSeq[DenseVector[Double]] =
+    bodies.par.map {
+      body => body.r1(allBodies.filter(_ != body))
+    }
 
 }

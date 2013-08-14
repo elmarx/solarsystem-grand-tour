@@ -22,6 +22,7 @@ package net.aerospaceresearch.model
 import net.aerospaceresearch.math
 import breeze.linalg.DenseVector
 import net.aerospaceresearch.math.Formulas
+import net.aerospaceresearch.jplparser.EntityAssignments.AstronomicalObjects
 
 /**
  * A body represents a planet, a probe, a moon, any particle etc.
@@ -30,11 +31,11 @@ import net.aerospaceresearch.math.Formulas
  * Date: 17.06.13
  * Time: 23:37
  *
- * @param r position, as vector
+ * @param r0 position, as vector
  * @param mass the mass of the
- * @param v velocity
+ * @param v0 velocity
  */
-case class Body(mass: Double, r: DenseVector[Double], v: DenseVector[Double]) {
+case class Body(identity: AstronomicalObjects.Value, mass: Double, r0: DenseVector[Double], v0: DenseVector[Double]) {
 
   // def accelerate - Beschleunigen oder bremsen mit eigenem Antrieb
 
@@ -45,4 +46,10 @@ case class Body(mass: Double, r: DenseVector[Double], v: DenseVector[Double]) {
   }
 
   def acceleration(otherBodies: List[Body]): DenseVector[Double] = Formulas.acceleration(this, otherBodies)
+
+  def v1(otherBodies: List[Body]): DenseVector[Double] = Formulas.velocity(this, otherBodies)
+
+  def r1(otherBodies: List[Body]): DenseVector[Double] =
+    Formulas.position(this, otherBodies)
+
 }
