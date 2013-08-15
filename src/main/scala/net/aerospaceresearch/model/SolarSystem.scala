@@ -49,10 +49,7 @@ case class SolarSystem(bodies: ParSeq[Body], centerMass: Body, time: JulianTime)
   def goto(time: JulianTime, resultEvery: Double = 1, leap: Double = defaultLeap): List[SolarSystem] = {
     def iter(systems: List[SolarSystem], cur: SolarSystem, count: Double): List[SolarSystem] =
       if(cur.time > time) cur :: systems
-      else if(count >= resultEvery) {
-        println(cur.time)
-        iter(cur :: systems, cur.nextStep(leap), 0)
-      }
+      else if(count >= resultEvery) iter(cur :: systems, cur.nextStep(leap), 0)
       else iter(systems, cur.nextStep(leap), count + leap)
 
     iter(Nil, this, 0.0)
