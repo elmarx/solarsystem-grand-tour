@@ -23,6 +23,7 @@ import net.aerospaceresearch.jplparser.DataReader
 import breeze.linalg.DenseVector
 import org.joda.time.{DateTimeUtils, DateTime}
 import net.aerospaceresearch.model.{SolarSystem, Body}
+import net.aerospaceresearch.csv.SolarSystemsCsvWriter
 
 
 /**
@@ -38,8 +39,8 @@ object Main {
     val plusOneYear = now + 365
 
     val systemNow = new DataReader(now).system
-    val inOneYear: List[SolarSystem] = systemNow.goto(now + 10)
+    val inOneYear: List[SolarSystem] = systemNow.goto(now + 365)
 
-    println(inOneYear)
+    new SolarSystemsCsvWriter(inOneYear)
   }
 }
