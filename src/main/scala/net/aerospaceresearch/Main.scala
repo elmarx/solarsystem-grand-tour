@@ -35,12 +35,19 @@ import net.aerospaceresearch.csv.SolarSystemsCsvWriter
 object Main {
 
   def main(args: Array[String]) {
-    val now: Double = DateTimeUtils.toJulianDay(DateTime.now.toInstant.getMillis).round
-    val plusOneYear = now + 365
+    val start: Double = 2456520
 
-    val systemNow = new DataReader(now).system
-    val inOneYear: List[SolarSystem] = systemNow.goto(now + 365)
+    0.to(365, 10).map { x =>
+      println(x)
 
-    new SolarSystemsCsvWriter(inOneYear)
+      val systemNow = new DataReader(start + x).system
+      val next: List[SolarSystem] = systemNow.goto(start + x + 10)
+
+      new SolarSystemsCsvWriter(next.reverse)
+    }
+
+
+
+
   }
 }
