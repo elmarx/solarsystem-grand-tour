@@ -37,7 +37,7 @@ class SolarSystemsCsvWriter(systems: Seq[SolarSystem]) {
   val file = new File("/home/elmar/gsoc/auto/" + DateTimeUtils.toJulianDay(DateTime.now.toInstant.getMillis) + ".csv")
 
 
-  val header = systems(0).bodies.map(
+  val header = "Julian Time" +: systems(0).bodies.map(
     b => List("vX", "vY", "vZ", "rX", "rY", "rZ").map(
       b.identity.toString + " " + _
     ).mkString(";")
@@ -45,7 +45,7 @@ class SolarSystemsCsvWriter(systems: Seq[SolarSystem]) {
 
 
   val content = systems.par.map(
-    _.bodies.map(b => (b.v0.toArray ++ b.r0.toArray).mkString(";")).mkString(";")
+    system => system.time + ";" + system.bodies.map(b => (b.v0.toArray ++ b.r0.toArray).mkString(";")).mkString(";")
   )
 
   val out = new PrintWriter(file)
