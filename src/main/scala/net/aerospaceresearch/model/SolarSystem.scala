@@ -29,7 +29,32 @@ import scala.collection.parallel.immutable.ParSeq
  * Time: 23:34
  */
 case class SolarSystem(bodies: ParSeq[Body], centerMass: Body, time: JulianTime) {
+  /**
+   * default leapsize is 1 second
+   */
+  val defaultLeap = 1.0 / (24 * 60 * 60)
+
   val allBodies = bodies :+ centerMass
 
-  def nextStep(leap: Double): SolarSystem = SolarSystem(allBodies.map(_.nextStep(this, leap)), centerMass, time + leap)
+  def nextStep(leap: Double = defaultLeap): SolarSystem =
+    SolarSystem(bodies.map(_.nextStep(this, leap)), centerMass, time + leap)
+
+  /**
+   * TODO: write unit test
+   * @param time
+   * @param resultEvery
+   * @param leap
+   * @return
+   */
+  def goto(time: JulianTime, resultEvery: Double = 1, leap: Double = defaultLeap): List[SolarSystem] = {
+    def iter(systems: List[SolarSystem], cur: SolarSystem, count: Double): List[SolarSystem] =
+      if(cur.time > time) cur :: systems
+      else if(count >= resultEvery) {
+        println(cur.time)
+        iter(cur :: systems, cur.nextStep(leap), 0)
+      }
+      else iter(systems, cur.nextStep(leap), count + leap)
+
+    iter(Nil, this, 0.0)
+  }
 }
