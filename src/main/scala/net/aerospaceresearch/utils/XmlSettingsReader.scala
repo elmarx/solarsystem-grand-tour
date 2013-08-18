@@ -19,7 +19,7 @@ class XmlSettingsReader(file: String) {
   val recordResultsEvery = (settings \ "recordResultsEvery").text.toDouble
   val leapSize = (settings \ "leapSize").text.toDouble
 
-  val bodies = (ssgt \ "bodies")(0).child.map(xmlNodeToBody)
+  val bodies = (ssgt \ "bodies")(0).child.filter(_.label != "#PCDATA").map(xmlNodeToBody)
 
   def xmlNodeToBody(e: Node): Body = {
     val name = (e \ "name").text
