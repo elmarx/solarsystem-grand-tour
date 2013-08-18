@@ -23,7 +23,7 @@ import net.aerospaceresearch.jplparser.DataReader
 import breeze.linalg.DenseVector
 import org.joda.time.{DateTimeUtils, DateTime}
 import net.aerospaceresearch.model.{SolarSystem, Body}
-import net.aerospaceresearch.utils.SolarSystemsCsvWriter
+import net.aerospaceresearch.utils.{XmlSettingsReader, SolarSystemsCsvWriter}
 
 
 /**
@@ -35,19 +35,19 @@ import net.aerospaceresearch.utils.SolarSystemsCsvWriter
 object Main {
 
   def main(args: Array[String]) {
-    val start: Double = 2456520
 
-    0.to(365, 10).map { x =>
-      println(x)
+    // TODO: parse args for other input.xml files, so we can easily change these in batch runs
+    val settings = new XmlSettingsReader("input.xml")
 
-      val systemNow = new DataReader(start + x).system
-      val next: List[SolarSystem] = systemNow.goto(start + x + 10)
+    val defaultSystem = new DataReader(settings.startTime).system
+    val systemWithMyBodies = SolarSystem(
+      defaultSystem.bodies ++ settings.bodies,
+      defaultSystem.centerMass,
+      defaultSystem.time
+    )
 
-      new SolarSystemsCsvWriter(next.reverse)
-    }
+    val intermediateSystems = systemWithMyBodies.goto(settings.startTime + settings.days, settings.recordResultsEvery, settings.leapSize)
 
-
-
-
+    new SolarSystemsCsvWriter(intermediateSystems.reverse, settings.outputDir)
   }
 }
