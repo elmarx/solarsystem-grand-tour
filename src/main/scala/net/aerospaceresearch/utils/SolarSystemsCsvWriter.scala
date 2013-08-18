@@ -32,9 +32,9 @@ import org.joda.time.{DateTimeUtils, DateTime}
  * Date: 15.08.13
  * Time: 02:06
  */
-class SolarSystemsCsvWriter(systems: Seq[SolarSystem]) {
+class SolarSystemsCsvWriter(systems: Seq[SolarSystem], outputDir: String) {
 
-  val file = new File("/home/elmar/gsoc/auto/" + DateTimeUtils.toJulianDay(DateTime.now.toInstant.getMillis) + ".csv")
+  val file = new File(outputDir + DateTimeUtils.toJulianDay(DateTime.now.toInstant.getMillis) + ".csv")
 
 
   val header = "Julian Time" +: systems(0).bodies.map(
