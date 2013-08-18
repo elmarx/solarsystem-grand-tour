@@ -1,0 +1,27 @@
+<ssgt>
+    <settings>
+        <!-- Julian time to start -->
+        <startTime>2456520</startTime>
+        <!-- compute for how many days, beginning at startTime -->
+        <days>365</days>
+        <!-- output file, where to save csv files -->
+        <outputDir>/home/elmar/gsoc/auto</outputDir>
+        <!-- for every x days, add a result to the list of results, i.e.: print a line to the csv file
+            this is a double values, so it's also possible to save every second/hour etc.
+         -->
+        <recordResultsEvery>1</recordResultsEvery>
+        <!-- step size between t0 and t1 in julian time
+         the default value is 1.0 / (24 * 60 * 60), i.e.: every second
+         -->
+        <leapSize>1.1574074074074073E-5</leapSize>
+    </settings>
+    <bodies>
+        <probe>
+            <name>MS-Runge-Kutter</name>
+            <mass>500</mass>
+            <r x="8.820432389021566E51" y="-6.203282731784147E51" z="-2.690115071757977E51" />
+            <v x="1.1140891767440654E50" y="1.368206156137282E50" z="5.931218683407617E49" />
+        </probe>
+    </bodies>
+
+</ssgt>

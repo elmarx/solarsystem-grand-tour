@@ -16,6 +16,8 @@ class XmlSettingsReader(file: String) {
   val startTime = (settings \ "startTime").text.toDouble
   val days = (settings \ "days" ).text.toInt
   val outputDir = (settings \ "outputDir" ).text
+  val recordResultsEvery = (settings \ "recordResultsEvery").text.toDouble
+  val leapSize = (settings \ "leapSize").text.toDouble
 
   val bodies = (ssgt \ "bodies")(0).child.map(xmlNodeToBody)
 
