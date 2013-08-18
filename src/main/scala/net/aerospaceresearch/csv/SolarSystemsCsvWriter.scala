@@ -39,7 +39,7 @@ class SolarSystemsCsvWriter(systems: Seq[SolarSystem]) {
 
   val header = "Julian Time" +: systems(0).bodies.map(
     b => List("vX", "vY", "vZ", "rX", "rY", "rZ").map(
-      b.identity.toString + " " + _
+      b.name + " " + _
     ).mkString(";")
   )
 

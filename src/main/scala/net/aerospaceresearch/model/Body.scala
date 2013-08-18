@@ -19,10 +19,8 @@
 
 package net.aerospaceresearch.model
 
-import net.aerospaceresearch.math
 import breeze.linalg.DenseVector
 import net.aerospaceresearch.math.Formulas
-import net.aerospaceresearch.jplparser.EntityAssignments.AstronomicalObjects
 import scala.collection.parallel.immutable.ParSeq
 
 /**
@@ -32,11 +30,12 @@ import scala.collection.parallel.immutable.ParSeq
  * Date: 17.06.13
  * Time: 23:37
  *
- * @param r0 position, as vector
- * @param mass the mass of the
- * @param v0 velocity
  */
-case class Body(identity: AstronomicalObjects.Value, mass: Double, r0: DenseVector[Double], v0: DenseVector[Double]) {
+trait Body {
+  val name: String
+  val mass: Double
+  val r0: DenseVector[Double]
+  val v0: DenseVector[Double]
 
   def forcesExperienced(otherBodies: ParSeq[Body]): ParSeq[DenseVector[Double]] = {
     // f = [G * m1 * m2 % (R2 - R1)] / ||R2 - R1||^3
@@ -60,9 +59,9 @@ case class Body(identity: AstronomicalObjects.Value, mass: Double, r0: DenseVect
     val v1 = Formulas.velocity(v0, a, leap)
     val r1 = Formulas.position(r0, v1, leap)
 
-    Body(identity, mass, r1, v1)
+    leapedBody(r1, v1)
   }
 
-
-
+  def leapedBody(r1: DenseVector[Double], v1: DenseVector[Double]): Body
 }
+

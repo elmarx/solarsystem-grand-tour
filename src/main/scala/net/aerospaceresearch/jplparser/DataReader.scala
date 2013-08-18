@@ -22,7 +22,7 @@ package net.aerospaceresearch.jplparser
 import org.joda.time.DateTimeUtils
 import com.github.nscala_time.time.Imports._
 import EntityAssignments.AstronomicalObjects._
-import net.aerospaceresearch.model.{Body, SolarSystem}
+import net.aerospaceresearch.model.{Planet, Star, Body, SolarSystem}
 import breeze.linalg.DenseVector
 
 /**
@@ -91,22 +91,22 @@ class DataReader(val pointInTime: Double) {
   }
 
   def system: SolarSystem = {
-    val sun = Body(Sun, masses(Sun).toDouble, DenseVector(0, 0, 0), DenseVector(0, 0, 0))
+    val sun = Star(Sun.toString, masses(Sun).toDouble, DenseVector(0, 0, 0), DenseVector(0, 0, 0))
     val bodies = masses.filter{
       case(Sun, _) => false
       case(Moon_Geocentric,_ ) => false
       case _ => true
-    }.map { case (entity, _) => entity } map toBody
+    }.map { case (entity, _) => entity } map toPlanet
 
     new SolarSystem(bodies.toList.par, sun, pointInTime)
   }
 
-  def toBody(entity: Value): Body = {
+  def toPlanet(entity: Value): Body = {
     val (rX, rY, rZ) = ephemerisService.position(entity, pointInTime)
     val (vX, vY, vZ) = ephemerisService.velocity(entity, pointInTime)
 
-    Body(
-      entity,
+    Planet(
+      entity.toString,
       masses(entity).toDouble,
       DenseVector(rX.toDouble, rY.toDouble, rZ.toDouble),
       DenseVector(vX.toDouble, vY.toDouble, vZ.toDouble)

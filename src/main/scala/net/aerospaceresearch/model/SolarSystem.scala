@@ -28,7 +28,7 @@ import scala.collection.parallel.immutable.ParSeq
  * Date: 17.06.13
  * Time: 23:34
  */
-case class SolarSystem(bodies: ParSeq[Body], centerMass: Body, time: JulianTime) {
+case class SolarSystem(bodies: ParSeq[Body], centerMass: Star, time: JulianTime) {
   /**
    * default leapsize is 1 second
    */
