@@ -23,7 +23,7 @@ import net.aerospaceresearch.jplparser.DataReader
 import breeze.linalg.DenseVector
 import org.joda.time.{DateTimeUtils, DateTime}
 import net.aerospaceresearch.model.{SolarSystem, Body}
-import net.aerospaceresearch.csv.SolarSystemsCsvWriter
+import net.aerospaceresearch.utils.SolarSystemsCsvWriter
 
 
 /**

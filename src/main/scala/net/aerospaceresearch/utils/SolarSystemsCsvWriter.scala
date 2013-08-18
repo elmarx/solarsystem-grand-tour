@@ -17,7 +17,7 @@
  * along with SolarSystemGrandTour.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package net.aerospaceresearch.csv
+package net.aerospaceresearch.utils
 
 import net.aerospaceresearch.model.SolarSystem
 import java.io.{PrintWriter, File}
