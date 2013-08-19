@@ -1,3 +1,5 @@
+import AssemblyKeys._
+
 name := "SolarSystemGrandTour"
 
 version := "1.0"
@@ -13,3 +15,5 @@ libraryDependencies  ++= Seq(
 resolvers ++= Seq(
     "Sonatype Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots/"
 )
+
+assemblySettings
