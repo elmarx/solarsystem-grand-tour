@@ -65,7 +65,8 @@ object Formulas {
    * @return
    */
   def velocity(v0: DenseVector[Double], a: DenseVector[Double], δt: Double): DenseVector[Double] = {
-    def f(velocity: DenseVector[Double], t: Double): DenseVector[Double] = velocity + a * t
+    def f(velocity: DenseVector[Double], t: Double): DenseVector[Double] =
+      velocity + a * δt
 
     rungeKutta4(f, v0, δt)
   }
@@ -80,7 +81,7 @@ object Formulas {
    */
   def position(r0: DenseVector[Double], v1: DenseVector[Double], δt: Double): DenseVector[Double] = {
     def f(pos: DenseVector[Double], t: Double): DenseVector[Double] =
-      pos + v1 * t
+      pos + v1 * δt
 
     rungeKutta4(f, r0, δt)
   }
