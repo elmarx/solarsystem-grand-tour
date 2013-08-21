@@ -17,7 +17,7 @@
  * along with SolarSystemGrandTour.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package net.aerospaceresearch.jplparser.data
+package net.aerospaceresearch.test.jplparser.data
 
 /**
  * test data taken from ftp://ssd.jpl.nasa.gov/pub/eph/planets/ascii/de423/header.423

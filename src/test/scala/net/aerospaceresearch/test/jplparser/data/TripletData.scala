@@ -17,25 +17,18 @@
  * along with SolarSystemGrandTour.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package net.aerospaceresearch.jplparser
+package net.aerospaceresearch.test.jplparser.data
 
-import org.scalatest.FunSuite
-
-class EntitySuite extends FunSuite {
-
-  test("astronomical object ids match item numbering in header") {
-
-    assert(EntityAssignments.AstronomicalObjects.Earth_Moon_Barycenter.id === 2)
-    assert(EntityAssignments.AstronomicalObjects.Mercury.id === 0)
-  }
-
-  test("11 'planets' at the moment") {
-    assert(EntityAssignments.AstronomicalObjects.maxId === 11)
-  }
-
-  test("nutation and liberation") {
-    assert(EntityAssignments.Librations === 12)
-    assert(EntityAssignments.Nutations === 11)
-  }
-
+/**
+ * test data taken from ftp://ssd.jpl.nasa.gov/pub/eph/planets/ascii/de423/header.423
+ */
+trait TripletData {
+  val tripletGroup =
+    """
+      |   1050
+      |
+      |     3   171   231   309   342   366   387   405   423   441   753   819   899
+      |    14    10    13    11     8     7     6     6     6    13    11    10    10
+      |     4     2     2     1     1     1     1     1     1     8     2     4     4
+    """.stripMargin
 }

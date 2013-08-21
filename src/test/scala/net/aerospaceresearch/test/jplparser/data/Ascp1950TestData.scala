@@ -17,7 +17,7 @@
  * along with SolarSystemGrandTour.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package net.aerospaceresearch.jplparser.data
+package net.aerospaceresearch.test.jplparser.data
 
 trait Ascp1950TestData {
 

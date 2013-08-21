@@ -17,9 +17,10 @@
  * along with SolarSystemGrandTour.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package net.aerospaceresearch.jplparser
+package net.aerospaceresearch.test.jplparser
 
 import org.scalatest.FunSpec
+import net.aerospaceresearch.jplparser.CoefficientSet
 
 class CoefficientSetSpec extends FunSpec {
 

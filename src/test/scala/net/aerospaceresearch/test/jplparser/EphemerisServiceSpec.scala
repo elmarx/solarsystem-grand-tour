@@ -17,10 +17,11 @@
  * along with SolarSystemGrandTour.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package net.aerospaceresearch.jplparser
+package net.aerospaceresearch.test.jplparser
 
 import org.scalatest.FunSpec
 import net.aerospaceresearch.jplparser.data.{ExampleHeaderFile, Ascp1950TestData}
+import net.aerospaceresearch.jplparser.{JplParser, EntityAssignments}
 import EntityAssignments.AstronomicalObjects._
 import net.aerospaceresearch.utils.SiConverter._
 import org.scalatest.matchers.ShouldMatchers._
