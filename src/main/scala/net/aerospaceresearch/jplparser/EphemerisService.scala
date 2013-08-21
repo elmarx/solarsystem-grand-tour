@@ -32,17 +32,6 @@ class EphemerisService(quartets: List[(Int, Int, Int, Int)],
   val intervalDuration = timingData._3
 
   /**
-   * convert km to au, using the values from the header file, with a fallback value
-   * @param value value in km to convert
-   * @return
-   */
-  def inAu(implicit value: BigDecimal) = value / constants.get("AU").getOrElse(0.149597870699626200e+09)
-
-  def inAu(implicit value: (BigDecimal, BigDecimal, BigDecimal)): (BigDecimal, BigDecimal, BigDecimal) =
-    (inAu(value._1), inAu(value._2), inAu(value._3))
-
-
-  /**
    * calculate the position of an entity for a given pointInTime
    * @param entityId id/index of the entity
    * @param pointInTime pointInTime in Julian Time
