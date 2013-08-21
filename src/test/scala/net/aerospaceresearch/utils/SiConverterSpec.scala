@@ -1,4 +1,4 @@
-package net.aerospaceresearch.jplparser
+package net.aerospaceresearch.utils
 
 import org.scalatest.FunSuite
 import org.scalatest.matchers.ShouldMatchers._
