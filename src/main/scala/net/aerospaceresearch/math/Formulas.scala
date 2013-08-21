@@ -35,9 +35,8 @@ object Formulas {
 
   type Derivative[T] = (DenseVector[T], JulianTime) => DenseVector[T]
 
-  // gravitational constant (km^3/kg/s^2)
-  val G: Double = 6.67259e-20 // G taken from "orbitbook"
-  // val G: Double = 6.67384e-20 // G according to wikipedia
+  // The gravitational constant in m^3/(kg*s2) from wikipedia
+  val G = 6.67384e-11
 
   /**
    *
