@@ -20,8 +20,9 @@
 package net.aerospaceresearch.test.jplparser
 
 import org.scalatest.{FunSpec, FunSuite}
-import net.aerospaceresearch.jplparser.data.{ExampleHeaderFile, Ascp1950TestData, TripletData, ConstantGroupsData}
-import net.aerospaceresearch.jplparser.JplParser
+import net.aerospaceresearch.jplparser.JplParser._
+import net.aerospaceresearch.test.jplparser.data.{ExampleHeaderFile, Ascp1950TestData, TripletData, ConstantGroupsData}
+import net.aerospaceresearch.jplparser.{EntityAssignments, Interval, CoefficientSet, JplParser}
 
 /**
  * Specification for the JPL Parser

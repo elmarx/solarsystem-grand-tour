@@ -29,11 +29,13 @@ import net.aerospaceresearch.jplparser.DataReader
  */
 class SolarSystemSuite extends FunSuite with BeforeAndAfter {
 
-  var service: SolarSystem
-
-
   test("several step") {
-    val initialSystem = new DataReader(2456520).system
+    val startTime = 2456520
+    val initialSystem = new DataReader().system(2456520)
+
+    val nextSystem = initialSystem.goto(startTime + 1)(0)
+
+
 
 
   }

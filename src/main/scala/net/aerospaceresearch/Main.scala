@@ -39,7 +39,7 @@ object Main {
     // TODO: parse args for other input.xml files, so we can easily change these in batch runs
     val settings = new XmlSettingsReader("input.xml")
 
-    val defaultSystem = new DataReader(settings.startTime).system
+    val defaultSystem = new DataReader().system(settings.startTime)
     val systemWithMyBodies = SolarSystem(
       defaultSystem.bodies ++ settings.bodies,
       defaultSystem.centerMass,

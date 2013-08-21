@@ -24,17 +24,19 @@ import com.github.nscala_time.time.Imports._
 import EntityAssignments.AstronomicalObjects._
 import net.aerospaceresearch.model.{Planet, Star, Body, SolarSystem}
 import breeze.linalg.DenseVector
+import Types.JulianTime
+import scala.collection.mutable
+
+object DataReader {
+  def apply(): DataReader = new DataReader
+}
 
 /**
  * reads files based on the julian time given
  * This file makes some assumptions (i.e.: it's specific for the 423 ephemerides set)
  *
  */
-object DataReader {
-  def current() = new DataReader(DateTimeUtils.toJulianDay(DateTime.now.toInstant.getMillis))
-}
-
-class DataReader(val pointInTime: Double) {
+class DataReader {
   // all masses in Si-unit "kg"
   lazy val masses = Map(
     Mercury -> BigDecimal("3.3022E23"),
@@ -67,12 +69,10 @@ class DataReader(val pointInTime: Double) {
     s"ascp$interval.$ephemeridesSet"
   }
 
-
-  /**
-   * generate an EphemerisService for the pointInTime
-   * @return
-   */
-  lazy val ephemerisService: EphemerisService = JplParser.generateService(headerContent, currentDataContent)
+  private val ephemerisServiceCache = mutable.Map[JulianTime, EphemerisService]()
+  def ephemerisService(pointInTime: JulianTime) = {
+    ephemerisServiceCache.getOrElseUpdate(pointInTime, JplParser.generateService(headerContent, dataContent(pointInTime)))
+  }
 
   lazy val headerContent = {
     val headerSource = io.Source.fromFile(s"$folderName/$headerFile")
@@ -81,30 +81,34 @@ class DataReader(val pointInTime: Double) {
     headerContent
   }
 
-  lazy val currentDataContent = {
+  private val fileCache = mutable.Map[String, String]()
+  def dataContent(pointInTime: JulianTime): String = {
     val dataFilename = getFilenameForJulianTime(pointInTime)
-
-    // read data
-    val dataSource = io.Source.fromFile(s"$folderName/$dataFilename")
-    val dataContent = dataSource.getLines mkString "\n"
-    dataSource.close()
-    dataContent
+    fileCache.getOrElseUpdate(dataFilename, {
+      val dataSource = io.Source.fromFile(s"$folderName/$dataFilename")
+      val dataContent = dataSource.getLines mkString "\n"
+      dataSource.close()
+      dataContent
+    })
   }
 
-  def system: SolarSystem = {
+  def system(pointInTime: JulianTime = DateTimeUtils.toJulianDay(DateTime.now.toInstant.getMillis)): SolarSystem = {
+    val tp = toPlanet(pointInTime) _
+
     val sun = Star(Sun.toString, masses(Sun).toDouble, DenseVector(0, 0, 0), DenseVector(0, 0, 0))
     val bodies = masses.filter{
       case(Sun, _) => false
       case(Moon_Geocentric,_ ) => false
       case _ => true
-    }.map { case (entity, _) => entity } map toPlanet
+    }.map { case (entity, _) => entity } map tp
 
     new SolarSystem(bodies.toList.par, sun, pointInTime)
   }
 
-  def toPlanet(entity: Value): Body = {
-    val (rX, rY, rZ) = ephemerisService.position(entity, pointInTime)
-    val (vX, vY, vZ) = ephemerisService.velocity(entity, pointInTime)
+  def toPlanet(pointInTime: JulianTime)(entity: Value): Body = {
+    val service = ephemerisService(pointInTime)
+    val (rX, rY, rZ) = service.position(entity, pointInTime)
+    val (vX, vY, vZ) = service.velocity(entity, pointInTime)
 
     Planet(
       entity.toString,

@@ -27,12 +27,12 @@ class DataReaderSpec extends  FunSpec {
   describe("The datareader") {
 
     it("returns the filename to read") {
-      assert(DataReader.current().getFilenameForJulianTime(2456497) === "ascp2000.423")
+      assert(new DataReader().getFilenameForJulianTime(2456497) === "ascp2000.423")
 
     }
 
     it("generates a solarsystem") {
-      val system = DataReader.current().system
+      val system = new DataReader().system()
       assert(system.centerMass.mass === BigDecimal("1.988435E30").toDouble)
       assert(system.bodies.length === 9)
     }

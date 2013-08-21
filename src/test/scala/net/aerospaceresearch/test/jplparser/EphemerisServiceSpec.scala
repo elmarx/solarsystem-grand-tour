@@ -20,11 +20,11 @@
 package net.aerospaceresearch.test.jplparser
 
 import org.scalatest.FunSpec
-import net.aerospaceresearch.jplparser.data.{ExampleHeaderFile, Ascp1950TestData}
 import net.aerospaceresearch.jplparser.{JplParser, EntityAssignments}
 import EntityAssignments.AstronomicalObjects._
 import net.aerospaceresearch.utils.SiConverter._
 import org.scalatest.matchers.ShouldMatchers._
+import net.aerospaceresearch.test.jplparser.data.{ExampleHeaderFile, Ascp1950TestData}
 
 class EphemerisServiceSpec extends FunSpec {
 
