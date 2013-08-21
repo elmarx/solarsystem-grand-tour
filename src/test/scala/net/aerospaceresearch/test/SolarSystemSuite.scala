@@ -23,21 +23,31 @@ import org.scalatest.FunSuite
 import org.scalatest.BeforeAndAfter
 import net.aerospaceresearch.model.SolarSystem
 import net.aerospaceresearch.jplparser.DataReader
+import net.aerospaceresearch.jplparser.Types._
+import org.scalatest.matchers.ShouldMatchers._
 
 /**
  * Created by elmar on 21.08.13.
  */
 class SolarSystemSuite extends FunSuite with BeforeAndAfter {
 
-  test("several step") {
-    val startTime = 2456520
-    val initialSystem = new DataReader().system(2456520)
+  private val dataReader: DataReader = DataReader()
 
-    val nextSystem = initialSystem.goto(startTime + 1)(0)
+  test("can calculate the movement and velocity after one day") {
+    val startTime: JulianTime = 2456520
+    val initialSystem = dataReader.system(startTime)
 
+    val calculatedSystem = initialSystem.goto(startTime + 1)(0)
+    val givenSystem = dataReader.system(startTime + 1)
 
+    // now compare the calculatedSystem and the givenSystem
+    calculatedSystem.time should be (givenSystem.time plusOrMinus 1e-5)
 
+    val mercuryCalculated = calculatedSystem.bodies.find(_.name == "Mercury").get
+    val mercuryGiven = givenSystem.bodies.find(_.name == "Mercury").get
 
+    mercuryCalculated.v0(0) should be (mercuryGiven.v0(0) plusOrMinus 1e-5)
+    mercuryCalculated.r0(0) should be (mercuryGiven.r0(0) plusOrMinus 1e-5)
   }
 
 }
