@@ -19,7 +19,7 @@ class SiConverterSpec extends FunSuite {
   }
 
   test("velocity conversion") {
-    SiConverter.fromKmPerDay(30000) should be (347.2 plusOrMinus 0.03)
+    SiConverter.fromKmPerDay(30000).toDouble should be (347.2 plusOrMinus 0.03)
   }
 
 }

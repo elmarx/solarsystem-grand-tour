@@ -5,7 +5,7 @@ package net.aerospaceresearch.utils
  */
 object SiConverter {
 
-  def fromKmPerDay(unit: Double): Double = {
+  def fromKmPerDay(unit: BigDecimal): BigDecimal = {
     val m = fromKm(1)
     val s = fromDay(1)
 
@@ -21,7 +21,7 @@ object SiConverter {
    * @param unit
    * @return
    */
-  def fromKm(unit: Double): Double = {
+  def fromKm(unit: BigDecimal): BigDecimal = {
     unit * kilo
   }
 
@@ -30,7 +30,7 @@ object SiConverter {
    * @param unit time in day
    * @return
    */
-  def fromDay(unit: Double): Double = {
+  def fromDay(unit: BigDecimal): BigDecimal = {
     // a day has 24 hours
     fromHour(24 * unit)
   }
@@ -40,7 +40,7 @@ object SiConverter {
    * @param unit time in hours
    * @return seconds
    */
-  def fromHour(unit: Double): Double = {
+  def fromHour(unit: BigDecimal): BigDecimal = {
     fromMinute(60 * unit)
   }
 
@@ -49,7 +49,7 @@ object SiConverter {
    * @param unit time in minutes
    * @return seconds
    */
-  def fromMinute(unit: Double): Double = {
+  def fromMinute(unit: BigDecimal): BigDecimal = {
     // one minute has 60 seconds
     unit * 60
   }
