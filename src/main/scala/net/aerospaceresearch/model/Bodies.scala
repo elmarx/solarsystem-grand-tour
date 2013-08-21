@@ -17,8 +17,8 @@ case class Star(name: String, mass: Double, r0: DenseVector[Double], v0: DenseVe
  * a planet
  * @param name
  * @param mass
- * @param r0
- * @param v0
+ * @param r0 position m
+ * @param v0 velocity in m/s
  */
 case class Planet(name: String, mass: Double, r0: DenseVector[Double], v0: DenseVector[Double]) extends Body {
   def leapedBody(r1: DenseVector[Double], v1: DenseVector[Double]): Body = Planet(name, mass, r1, v1)
