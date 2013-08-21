@@ -22,6 +22,8 @@ package net.aerospaceresearch.jplparser
 import org.scalatest.FunSpec
 import net.aerospaceresearch.jplparser.data.{ExampleHeaderFile, Ascp1950TestData}
 import EntityAssignments.AstronomicalObjects._
+import net.aerospaceresearch.utils.SiConverter._
+import org.scalatest.matchers.ShouldMatchers._
 
 class EphemerisServiceSpec extends FunSpec {
 
@@ -54,22 +56,23 @@ class EphemerisServiceSpec extends FunSpec {
     }
 
     it("returns the position vector") {
-      val expectedPositionInAu = (
-        0.236503372958839700,
-        -0.3069001738761292,
-        -0.18869511987388435
-        )
-
-      val expectedPosition = (
+      val inKm = (
          3.538040100792197E7,
          -4.591161252921398E7,
          -2.8228388144543815E7
       )
 
+      val expectedPosition = (
+        fromKm(inKm._1),
+        fromKm(inKm._2),
+        fromKm(inKm._3)
+      )
+
       val position = service.position(Mercury, 2433264.5)
-      assert(position._1.toDouble === expectedPosition._1)
-      assert(position._2.toDouble === expectedPosition._2)
-      assert(position._3.toDouble === expectedPosition._3)
+
+      assert(position._1.toDouble === expectedPosition._1.toDouble)
+      assert(position._2.toDouble === expectedPosition._2.toDouble)
+      assert(position._3.toDouble === expectedPosition._3.toDouble)
     }
 
     it("returs the chebyshev velocity polynoms") {
@@ -81,23 +84,23 @@ class EphemerisServiceSpec extends FunSpec {
     }
 
     it("returns the velocity vector") {
-      val expectedVelocityInAu = (
-        0.01790969458602632,
-        0.015536097599746987,
-        0.006437368692973857
-      )
-
-      val expectedVelocity = (
+      val inKmPerDay = (
         2679252.174950161,
         2324167.119903723,
         963016.6493773247
       )
 
+      val expectedVelocity = (
+        fromKmPerDay(inKmPerDay._1),
+        fromKmPerDay(inKmPerDay._2),
+        fromKmPerDay(inKmPerDay._3)
+      )
+
       val velocity = service.velocity(Mercury, 2433264.5)
 
-      assert(velocity._1.toDouble === expectedVelocity._1)
-      assert(velocity._2.toDouble === expectedVelocity._2)
-      assert(velocity._3.toDouble === expectedVelocity._3)
+      assert(velocity._1.toDouble === expectedVelocity._1.toDouble, "x mismatches")
+      velocity._2.toDouble should be (expectedVelocity._2.toDouble plusOrMinus 1e-11)
+      assert(velocity._3.toDouble === expectedVelocity._3.toDouble, "z mismatches")
     }
 
 

@@ -35,6 +35,7 @@ object DataReader {
 }
 
 class DataReader(val pointInTime: Double) {
+  // all masses in Si-unit "kg"
   lazy val masses = Map(
     Mercury -> BigDecimal("3.3022E23"),
     Venus -> BigDecimal("4.869E24"),

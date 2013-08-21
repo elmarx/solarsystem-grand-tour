@@ -20,6 +20,7 @@
 package net.aerospaceresearch.jplparser
 
 import Types._
+import net.aerospaceresearch.utils.SiConverter._
 
 class EphemerisService(quartets: List[(Int, Int, Int, Int)],
                        val entities: List[AstronomicalObject],
@@ -48,7 +49,11 @@ class EphemerisService(quartets: List[(Int, Int, Int, Int)],
     val y = calculator(coefficientSet.coefficients.map(_._2))
     val z = calculator(coefficientSet.coefficients.map(_._3))
 
-    (x, y, z)
+    (
+      fromKm(x),
+      fromKm(y),
+      fromKm(z)
+    )
   }
 
   def findCoefficientSet(entity: AstronomicalObject, pointInTime: JulianTime): CoefficientSet = {
@@ -75,7 +80,11 @@ class EphemerisService(quartets: List[(Int, Int, Int, Int)],
     val y = calculator(coefficientSet._2)
     val z = calculator(coefficientSet._3)
 
-    (x, y, z)
+    (
+      fromKmPerDay(x),
+      fromKmPerDay(y),
+      fromKmPerDay(z)
+    )
   }
 
   /**
