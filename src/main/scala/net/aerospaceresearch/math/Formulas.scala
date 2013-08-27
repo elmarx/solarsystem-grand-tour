@@ -23,6 +23,7 @@ import net.aerospaceresearch.model.Body
 import breeze.linalg._
 import net.aerospaceresearch.jplparser.Types.JulianTime
 import scala.collection.parallel.immutable.ParSeq
+import org.apache.commons.math3.ode.nonstiff.{ClassicalRungeKuttaIntegrator, RungeKuttaIntegrator}
 
 
 /**
@@ -64,10 +65,13 @@ object Formulas {
    * @return
    */
   def velocity(v0: DenseVector[Double], a: DenseVector[Double], δt: Double): DenseVector[Double] = {
-    def f(velocity: DenseVector[Double], t: Double): DenseVector[Double] =
-      velocity + a * δt
+    val ode = new VelocityOde(a)
+    val integrator = new ClassicalRungeKuttaIntegrator(δt)
+    val v1 = new Array[Double](3)
 
-    rungeKutta4(f, v0, δt)
+    integrator.integrate(ode, 0.0, v0.toArray, δt, v1)
+
+    DenseVector[Double](v1(0), v1(1), v1(2))
   }
 
 
