@@ -43,7 +43,7 @@ class SolarSystemSuite extends FunSuite with BeforeAndAfter {
 
     val initialSystem = new SolarSystem(bodies, centerMass, startTime)
 
-    val expectedPositionEarth = DenseVector[Double](1.5e11, 0, 0)
+    val expectedPositionEarth = DenseVector[Double](149999999999.994, 30000, 0)
     val expectedVelocityEarth = DenseVector[Double](-0.005932302222222223, 30e3, 0)
     val expectedAccelerationEarth = DenseVector[Double](-0.005932302222222223, 0, 0)
 
@@ -51,10 +51,16 @@ class SolarSystemSuite extends FunSuite with BeforeAndAfter {
     val calculatedEarth = calculatedSystem.bodies(0)
     assert(initialEarth.acceleration(initialSystem.allBodies.filter(_ != initialEarth)) === expectedAccelerationEarth)
 
+
     assert(calculatedEarth.name === initialEarth.name)
 
-    assert(calculatedEarth.v0 === expectedVelocityEarth)
-    //assert(calculatedEarth.r0 === expectedPositionEarth)
+    calculatedEarth.v0(0) should be (expectedVelocityEarth(0) plusOrMinus 1e-5)
+    calculatedEarth.v0(1) should be (expectedVelocityEarth(1) plusOrMinus 1e-5)
+    calculatedEarth.v0(2) should be (expectedVelocityEarth(2) plusOrMinus 1e-5)
+
+    calculatedEarth.r0(0) should be (expectedPositionEarth(0) plusOrMinus 1e-4)
+    calculatedEarth.r0(1) should be (expectedPositionEarth(1) plusOrMinus 1e-4)
+    calculatedEarth.r0(2) should be (expectedPositionEarth(2) plusOrMinus 1e-4)
   }
 
   test("can calculate the movement and velocity after one day") {

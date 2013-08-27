@@ -9,9 +9,13 @@ import breeze.linalg.DenseVector
 class VelocityOde(val a: DenseVector[Double]) extends FirstOrderDifferentialEquations {
   def getDimension: Int = 3
 
-  def computeDerivatives(t: Double, y: Array[Double], yDot: Array[Double]) {
-    yDot(0) = y(0) + a(0) * t
-    yDot(1) = y(1) + a(1) * t
-    yDot(2) = y(2) + a(2) * t
+  def computeDerivatives(t: Double, y: Array[Double], v1: Array[Double]) {
+    v1(0) = a(0)
+    v1(1) = a(1)
+    v1(2) = a(2)
   }
+}
+
+object VelocityOde {
+  def apply(a: DenseVector[Double]) = new VelocityOde(a)
 }

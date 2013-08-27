@@ -64,9 +64,16 @@ object Formulas {
    * @param δt
    * @return
    */
-  def velocity(v0: DenseVector[Double], a: DenseVector[Double], δt: Double): DenseVector[Double] =
-    v0 + a * δt
+  def velocity(v0: DenseVector[Double], a: DenseVector[Double], δt: Double): DenseVector[Double] = {
+    val integrator = new ClassicalRungeKuttaIntegrator(δt)
 
+    // array to hold the result
+    val v1 = new Array[Double](3)
+
+    integrator.integrate(VelocityOde(a), 0.0, v0.toArray, δt, v1)
+
+    DenseVector[Double](v1)
+  }
 
   /**
    *
@@ -75,6 +82,13 @@ object Formulas {
    * @param δt
    * @return
    */
-  def position(r0: DenseVector[Double], v1: DenseVector[Double], δt: Double): DenseVector[Double] =
-    r0 + v1 * δt
+  def position(r0: DenseVector[Double], v1: DenseVector[Double], δt: Double): DenseVector[Double] = {
+    val integrator = new ClassicalRungeKuttaIntegrator(δt)
+
+    val r1 = new Array[Double](3)
+
+    integrator.integrate(PositionOde(v1), 0.0, r0.toArray, δt, r1)
+
+    DenseVector[Double](r1)
+  }
 }
