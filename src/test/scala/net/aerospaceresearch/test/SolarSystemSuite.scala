@@ -21,10 +21,12 @@ package net.aerospaceresearch.test
 
 import org.scalatest.FunSuite
 import org.scalatest.BeforeAndAfter
-import net.aerospaceresearch.model.SolarSystem
+import net.aerospaceresearch.model.{Body, Planet, Star, SolarSystem}
 import net.aerospaceresearch.jplparser.DataReader
 import net.aerospaceresearch.jplparser.Types._
 import org.scalatest.matchers.ShouldMatchers._
+import breeze.linalg.DenseVector
+import scala.collection.parallel.immutable.ParSeq
 
 /**
  * Created by elmar on 21.08.13.
@@ -32,6 +34,28 @@ import org.scalatest.matchers.ShouldMatchers._
 class SolarSystemSuite extends FunSuite with BeforeAndAfter {
 
   private val dataReader: DataReader = DataReader()
+
+  test("can calculate a very simple example/test model") {
+    val startTime = 0
+    val centerMass = Star("Sun", 2e30, DenseVector[Double](0, 0, 0), DenseVector[Double](0, 0, 0))
+    val initialEarth = Planet("Earth", 6e24, DenseVector[Double](1.5e11, 0, 0), DenseVector[Double](0, 30e3, 0))
+    val bodies = ParSeq[Body](initialEarth)
+
+    val initialSystem = new SolarSystem(bodies, centerMass, startTime)
+
+    val expectedPositionEarth = DenseVector[Double](1.5e11, 0, 0)
+    val expectedVelocityEarth = DenseVector[Double](-0.005932302222222223, 30e3, 0)
+    val expectedAccelerationEarth = DenseVector[Double](-0.005932302222222223, 0, 0)
+
+    val calculatedSystem = initialSystem.nextStep(1)
+    val calculatedEarth = calculatedSystem.bodies(0)
+    assert(initialEarth.acceleration(initialSystem.allBodies.filter(_ != initialEarth)) === expectedAccelerationEarth)
+
+    assert(calculatedEarth.name === initialEarth.name)
+
+    assert(calculatedEarth.v0 === expectedVelocityEarth)
+    //assert(calculatedEarth.r0 === expectedPositionEarth)
+  }
 
   test("can calculate the movement and velocity after one day") {
     val startTime: JulianTime = 2456520
@@ -49,5 +73,7 @@ class SolarSystemSuite extends FunSuite with BeforeAndAfter {
     mercuryCalculated.v0(0) should be (mercuryGiven.v0(0) plusOrMinus 1e-5)
     mercuryCalculated.r0(0) should be (mercuryGiven.r0(0) plusOrMinus 1e-5)
   }
+
+
 
 }

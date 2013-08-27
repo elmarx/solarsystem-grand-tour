@@ -64,15 +64,8 @@ object Formulas {
    * @param δt
    * @return
    */
-  def velocity(v0: DenseVector[Double], a: DenseVector[Double], δt: Double): DenseVector[Double] = {
-    val ode = new VelocityOde(a)
-    val integrator = new ClassicalRungeKuttaIntegrator(δt)
-    val v1 = new Array[Double](3)
-
-    integrator.integrate(ode, 0.0, v0.toArray, δt, v1)
-
-    DenseVector[Double](v1(0), v1(1), v1(2))
-  }
+  def velocity(v0: DenseVector[Double], a: DenseVector[Double], δt: Double): DenseVector[Double] =
+    v0 + a * δt
 
 
   /**
@@ -82,29 +75,6 @@ object Formulas {
    * @param δt
    * @return
    */
-  def position(r0: DenseVector[Double], v1: DenseVector[Double], δt: Double): DenseVector[Double] = {
-    def f(pos: DenseVector[Double], t: Double): DenseVector[Double] =
-      pos + v1 * δt
-
-    rungeKutta4(f, r0, δt)
-  }
-
-  /**
-   *
-   * @param f derivative function
-   * @param x0 initial value at beginning of the interval, i.e. at t0
-   * @param δt step size
-   * @return x1: value of x at t1
-   */
-  def rungeKutta4(f: Derivative[Double], x0: DenseVector[Double], δt: Double): DenseVector[Double] = {
-    val ka: DenseVector[Double] = f(x0, 0)
-    val kb = f(x0 + ka * (δt / 2), δt / 2)
-    val kc = f(x0 + (kb * (δt / 2)), δt / 2)
-    val kd = f(x0 + kc * δt, δt)
-
-    val k = (ka + (kb + kc) * 2.0 + kd) / 6.0
-
-    x0 + k * δt
-  }
-
+  def position(r0: DenseVector[Double], v1: DenseVector[Double], δt: Double): DenseVector[Double] =
+    r0 + v1 * δt
 }
