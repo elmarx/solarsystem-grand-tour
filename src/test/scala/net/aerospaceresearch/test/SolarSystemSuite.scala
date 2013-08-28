@@ -77,8 +77,8 @@ class SolarSystemSuite extends FunSuite with BeforeAndAfter {
     val mercuryCalculated = calculatedSystem.bodies.find(_.name == "Mercury").get
     val mercuryGiven = givenSystem.bodies.find(_.name == "Mercury").get
 
-    mercuryCalculated.v0(0) should be (mercuryGiven.v0(0) plusOrMinus 1e-5)
-    mercuryCalculated.r0(0) should be (mercuryGiven.r0(0) plusOrMinus 1e-5)
+    mercuryCalculated.v0(0) should be (mercuryGiven.v0(0) plusOrMinus 25)
+    mercuryCalculated.r0(0) should be (mercuryGiven.r0(0) plusOrMinus 1e6)
   }
 
 
