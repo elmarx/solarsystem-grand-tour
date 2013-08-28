@@ -52,6 +52,6 @@ object Main {
       settings.recordResultsEvery, settings.leapSize
     )
 
-    new SolarSystemsCsvWriter(intermediateSystems.reverse, settings.outputDir)
+    new SolarSystemsCsvWriter(intermediateSystems.sortBy(_.time.value) , settings.outputDir)
   }
 }
