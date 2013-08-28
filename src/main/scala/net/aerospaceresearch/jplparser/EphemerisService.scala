@@ -21,10 +21,11 @@ package net.aerospaceresearch.jplparser
 
 import Types._
 import net.aerospaceresearch.utils.SiConverter._
+import net.aerospaceresearch.units.Days
 
 class EphemerisService(quartets: List[(Int, Int, Int, Int)],
                        val entities: List[AstronomicalObject],
-                       timingData: (JulianTime, JulianTime, Double),
+                       timingData: (Days, Days, Double),
                        constants: Map[String, BigDecimal]
                         ) {
 
@@ -38,7 +39,7 @@ class EphemerisService(quartets: List[(Int, Int, Int, Int)],
    * @param pointInTime pointInTime in Julian Time
    * @return
    */
-  def position(entityId: EntityAssignments.AstronomicalObjects.Value, pointInTime: JulianTime): Position = {
+  def position(entityId: EntityAssignments.AstronomicalObjects.Value, pointInTime: Days): Position = {
     val entity = this.entity(entityId)
     val coefficientSet = entity.intervals.find(_.includes(pointInTime)).get.sets(subInterval(entity, pointInTime))
     val time = chebyshevTime(entityId, pointInTime)
@@ -56,11 +57,11 @@ class EphemerisService(quartets: List[(Int, Int, Int, Int)],
     )
   }
 
-  def findCoefficientSet(entity: AstronomicalObject, pointInTime: JulianTime): CoefficientSet = {
+  def findCoefficientSet(entity: AstronomicalObject, pointInTime: Days): CoefficientSet = {
     entity.intervals.find(_.includes(pointInTime)).get.sets(subInterval(entity, pointInTime))
   }
 
-  def velocity(entityId: EntityAssignments.AstronomicalObjects.Value, pointInTime: JulianTime): Velocity = {
+  def velocity(entityId: EntityAssignments.AstronomicalObjects.Value, pointInTime: Days): Velocity = {
     val entity: AstronomicalObject = this.entity(entityId)
 
     val coefficientSet = findCoefficientSet(entity, pointInTime)
@@ -105,10 +106,10 @@ class EphemerisService(quartets: List[(Int, Int, Int, Int)],
    * @param pointInTime a point in time for which the subInterval Index should by found
    * @return
    */
-  def subInterval(entity: AstronomicalObject, pointInTime: JulianTime): Int = {
+  def subInterval(entity: AstronomicalObject, pointInTime: Days): Int = {
     val interval = entity.intervals.find(_.includes(pointInTime)).get
 
-    ((pointInTime - interval.startingTime) / interval.subIntervalDuration).toInt
+    ((pointInTime - interval.startingTime) / interval.subIntervalDuration).value.toInt
   }
 
   /**
@@ -117,14 +118,14 @@ class EphemerisService(quartets: List[(Int, Int, Int, Int)],
    * @param pointInTime the desired point in time in julian time
    * @return
    */
-  def chebyshevTime(entityId: EntityAssignments.AstronomicalObjects.Value, pointInTime: JulianTime): Double = {
+  def chebyshevTime(entityId: EntityAssignments.AstronomicalObjects.Value, pointInTime: Days): Double = {
     val interval = entity(entityId).intervals.find(_.includes(pointInTime)).get
 
     val subInterval = this.subInterval(entity(entityId), pointInTime)
-    val intervalStartTime = interval.startingTime
-    val subIntervalDuration = interval.subIntervalDuration
+    val intervalStartTime = interval.startingTime.value
+    val subIntervalDuration = interval.subIntervalDuration.value
 
-    2 * ((pointInTime - (subInterval * subIntervalDuration + intervalStartTime)) / subIntervalDuration) - 1
+    2 * ((pointInTime.value - (subInterval * subIntervalDuration + intervalStartTime)) / subIntervalDuration) - 1
   }
 
   /**

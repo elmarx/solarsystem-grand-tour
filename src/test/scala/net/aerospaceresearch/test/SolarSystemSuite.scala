@@ -27,6 +27,7 @@ import net.aerospaceresearch.jplparser.Types._
 import org.scalatest.matchers.ShouldMatchers._
 import breeze.linalg.DenseVector
 import scala.collection.parallel.immutable.ParSeq
+import net.aerospaceresearch.units.{Seconds, Days}
 
 /**
  * Created by elmar on 21.08.13.
@@ -36,7 +37,7 @@ class SolarSystemSuite extends FunSuite with BeforeAndAfter {
   private val dataReader: DataReader = DataReader()
 
   test("can calculate a very simple example/test model") {
-    val startTime = 0
+    val startTime = Days(0)
     val centerMass = Star("Sun", 2e30, DenseVector[Double](0, 0, 0), DenseVector[Double](0, 0, 0))
     val initialEarth = Planet("Earth", 6e24, DenseVector[Double](1.5e11, 0, 0), DenseVector[Double](0, 30e3, 0))
     val bodies = ParSeq[Body](initialEarth)
@@ -47,7 +48,7 @@ class SolarSystemSuite extends FunSuite with BeforeAndAfter {
     val expectedVelocityEarth = DenseVector[Double](-0.005932302222222223, 30e3, 0)
     val expectedAccelerationEarth = DenseVector[Double](-0.005932302222222223, 0, 0)
 
-    val calculatedSystem = initialSystem.nextStep(1)
+    val calculatedSystem = initialSystem.nextStep(Seconds(1))
     val calculatedEarth = calculatedSystem.bodies(0)
     assert(initialEarth.acceleration(initialSystem.allBodies.filter(_ != initialEarth)) === expectedAccelerationEarth)
 
@@ -64,14 +65,14 @@ class SolarSystemSuite extends FunSuite with BeforeAndAfter {
   }
 
   test("can calculate the movement and velocity after one day") {
-    val startTime: JulianTime = 2456520
+    val startTime: Days = Days(2456520)
     val initialSystem = dataReader.system(startTime)
 
-    val calculatedSystem = initialSystem.goto(startTime + 1)(0)
-    val givenSystem = dataReader.system(startTime + 1)
+    val calculatedSystem = initialSystem.goto(startTime + Days(1))(0)
+    val givenSystem = dataReader.system(startTime + Days(1))
 
     // now compare the calculatedSystem and the givenSystem
-    calculatedSystem.time should be (givenSystem.time plusOrMinus 1e-5)
+    calculatedSystem.time.value should be (givenSystem.time.value plusOrMinus 1e-5)
 
     val mercuryCalculated = calculatedSystem.bodies.find(_.name == "Mercury").get
     val mercuryGiven = givenSystem.bodies.find(_.name == "Mercury").get

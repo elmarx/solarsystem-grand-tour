@@ -21,13 +21,14 @@ package net.aerospaceresearch.test.jplparser
 
 import org.scalatest.FunSpec
 import net.aerospaceresearch.jplparser.DataReader
+import net.aerospaceresearch.units.Days
 
 class DataReaderSpec extends  FunSpec {
 
   describe("The datareader") {
 
     it("returns the filename to read") {
-      assert(new DataReader().getFilenameForJulianTime(2456497) === "ascp2000.423")
+      assert(new DataReader().getFilenameForJulianTime(Days(2456497)) === "ascp2000.423")
 
     }
 

@@ -10,10 +10,10 @@
             this is a double values, so it's also possible to save every second/hour etc.
          -->
         <recordResultsEvery>1</recordResultsEvery>
-        <!-- step size between t0 and t1 in julian time
-         the default value is 1.0 / (24 * 60 * 60), i.e.: every second
+        <!-- step size between t0 and t1 in Seconds
+         the default value is 1, i.e.: every second
          -->
-        <leapSize>1.1574074074074073E-5</leapSize>
+        <leapSize>1</leapSize>
     </settings>
     <bodies>
         <probe>

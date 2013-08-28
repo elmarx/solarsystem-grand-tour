@@ -1,6 +1,7 @@
 package net.aerospaceresearch.jplparser
 
 import Types._
+import net.aerospaceresearch.units.Days
 
 
 
@@ -106,10 +107,10 @@ object JplParser {
    * @param s the complete group 1030 from header.yyy
    * @return
    */
-  def parseTimingData(s: String): (JulianTime, JulianTime, Double) = {
+  def parseTimingData(s: String): (Days, Days, Double) = {
     val list = normalize(s).split(" ").drop(1).map(_.toDouble)
 
-    (list(0), list(1), list(2))
+    (Days(list(0)), Days(list(1)), list(2))
   }
 
 
@@ -159,7 +160,11 @@ object JplParser {
         val myRecords: List[List[BigDecimal]] = records.drop(firstRecord - 3).
           take(xCoefficients * xComponents * xCompleteSets).grouped(xCoefficients * xComponents).toList
 
-        Interval(startingTime.toDouble, endingTime.toDouble, myRecords.map(CoefficientSet(_, xCoefficients)))
+        Interval(
+          Days(startingTime.toDouble),
+          Days(endingTime.toDouble),
+          myRecords.map(CoefficientSet(_, xCoefficients))
+        )
       }
       case _ => throw new IllegalArgumentException("the data do not contain correct intervals")
     }

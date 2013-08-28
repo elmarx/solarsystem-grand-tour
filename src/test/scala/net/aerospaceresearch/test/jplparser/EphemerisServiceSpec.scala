@@ -25,6 +25,7 @@ import EntityAssignments.AstronomicalObjects._
 import net.aerospaceresearch.utils.SiConverter._
 import org.scalatest.matchers.ShouldMatchers._
 import net.aerospaceresearch.test.jplparser.data.{ExampleHeaderFile, Ascp1950TestData}
+import net.aerospaceresearch.units.Days
 
 class EphemerisServiceSpec extends FunSpec {
 
@@ -36,16 +37,16 @@ class EphemerisServiceSpec extends FunSpec {
   describe("the EphemerisService") {
 
     it("calculates the chebyshev time") {
-      expectResult(-1.0)(service.chebyshevTime(Mercury, 2433264.5))
-      expectResult(0.75)(service.chebyshevTime(Mercury, 2433279.5))
-      expectResult(0.875)(service.chebyshevTime(Venus, 2433279.5))
-      expectResult(-0.0625)(service.chebyshevTime(Mars, 2433279.5))
-      expectResult(0.5)(service.chebyshevTime(Moon_Geocentric, 2433279.5))
+      expectResult(-1.0)(service.chebyshevTime(Mercury, Days(2433264.5)))
+      expectResult(0.75)(service.chebyshevTime(Mercury, Days(2433279.5)))
+      expectResult(0.875)(service.chebyshevTime(Venus, Days(2433279.5)))
+      expectResult(-0.0625)(service.chebyshevTime(Mars, Days(2433279.5)))
+      expectResult(0.5)(service.chebyshevTime(Moon_Geocentric, Days(2433279.5)))
     }
 
     it("calculates the subinterval for a point-in-time") {
       val moon = service.entity(Moon_Geocentric)
-      expectResult(3)(service.subInterval(moon, 2433279.5))
+      expectResult(3)(service.subInterval(moon, Days(2433279.5)))
     }
 
     it("calculates the chebyshev position polynoms") {
@@ -69,7 +70,7 @@ class EphemerisServiceSpec extends FunSpec {
         fromKm(inKm._3)
       )
 
-      val position = service.position(Mercury, 2433264.5)
+      val position = service.position(Mercury, Days(2433264.5))
 
       assert(position._1.toDouble === expectedPosition._1.toDouble)
       assert(position._2.toDouble === expectedPosition._2.toDouble)
@@ -97,7 +98,7 @@ class EphemerisServiceSpec extends FunSpec {
         fromKmPerDay(inKmPerDay._3)
       )
 
-      val velocity = service.velocity(Mercury, 2433264.5)
+      val velocity = service.velocity(Mercury, Days(2433264.5))
 
       assert(velocity._1.toDouble === expectedVelocity._1.toDouble, "x mismatches")
       velocity._2.toDouble should be (expectedVelocity._2.toDouble plusOrMinus 1e-11)

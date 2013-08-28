@@ -3,6 +3,7 @@ package net.aerospaceresearch.utils
 import scala.xml.{Node, XML}
 import net.aerospaceresearch.model.{Probe, Body}
 import breeze.linalg.DenseVector
+import net.aerospaceresearch.units.{Seconds, Days}
 
 /**
  *
@@ -13,11 +14,11 @@ class XmlSettingsReader(file: String) {
   val ssgt = XML.loadFile(file)
   val settings = ssgt \ "settings"
 
-  val startTime = (settings \ "startTime").text.toDouble
+  val startTime = Days((settings \ "startTime").text.toDouble)
   val days = (settings \ "days" ).text.toInt
   val outputDir = (settings \ "outputDir" ).text
-  val recordResultsEvery = (settings \ "recordResultsEvery").text.toDouble
-  val leapSize = (settings \ "leapSize").text.toDouble
+  val recordResultsEvery = Days((settings \ "recordResultsEvery").text.toDouble)
+  val leapSize = Seconds((settings \ "leapSize").text.toDouble)
 
   val bodies = (ssgt \ "bodies")(0).child.filter(_.label != "#PCDATA").map(xmlNodeToBody)
 

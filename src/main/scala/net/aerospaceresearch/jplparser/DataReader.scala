@@ -24,8 +24,8 @@ import com.github.nscala_time.time.Imports._
 import EntityAssignments.AstronomicalObjects._
 import net.aerospaceresearch.model.{Planet, Star, Body, SolarSystem}
 import breeze.linalg.DenseVector
-import Types.JulianTime
 import scala.collection.mutable
+import net.aerospaceresearch.units.Days
 
 object DataReader {
   def apply(): DataReader = new DataReader
@@ -61,16 +61,16 @@ class DataReader {
    * @param pointInTime a point in time in julian time
    * @return
    */
-  def getFilenameForJulianTime(pointInTime: Types.JulianTime): String = {
-    val epochMillis = DateTimeUtils.fromJulianDay(pointInTime)
+  def getFilenameForJulianTime(pointInTime: Days): String = {
+    val epochMillis = DateTimeUtils.fromJulianDay(pointInTime.value)
     val year: Int = new DateTime(epochMillis).year.get
     val interval = year - (year % 50)
 
     s"ascp$interval.$ephemeridesSet"
   }
 
-  private val ephemerisServiceCache = mutable.Map[JulianTime, EphemerisService]()
-  def ephemerisService(pointInTime: JulianTime) = {
+  private val ephemerisServiceCache = mutable.Map[Days, EphemerisService]()
+  def ephemerisService(pointInTime: Days) = {
     ephemerisServiceCache.getOrElseUpdate(pointInTime, JplParser.generateService(headerContent, dataContent(pointInTime)))
   }
 
@@ -82,7 +82,7 @@ class DataReader {
   }
 
   private val fileCache = mutable.Map[String, String]()
-  def dataContent(pointInTime: JulianTime): String = {
+  def dataContent(pointInTime: Days): String = {
     val dataFilename = getFilenameForJulianTime(pointInTime)
     fileCache.getOrElseUpdate(dataFilename, {
       val dataSource = io.Source.fromFile(s"$folderName/$dataFilename")
@@ -92,7 +92,8 @@ class DataReader {
     })
   }
 
-  def system(pointInTime: JulianTime = DateTimeUtils.toJulianDay(DateTime.now.toInstant.getMillis)): SolarSystem = {
+  def system(pointInTime: Days = Days(DateTimeUtils.toJulianDay(DateTime.now.toInstant.getMillis))):
+  SolarSystem = {
     val tp = toPlanet(pointInTime) _
 
     val sun = Star(Sun.toString, masses(Sun).toDouble, DenseVector(0, 0, 0), DenseVector(0, 0, 0))
@@ -105,7 +106,7 @@ class DataReader {
     new SolarSystem(bodies.toList.par, sun, pointInTime)
   }
 
-  def toPlanet(pointInTime: JulianTime)(entity: Value): Body = {
+  def toPlanet(pointInTime: Days)(entity: Value): Body = {
     val service = ephemerisService(pointInTime)
     val (rX, rY, rZ) = service.position(entity, pointInTime)
     val (vX, vY, vZ) = service.velocity(entity, pointInTime)

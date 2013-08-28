@@ -22,6 +22,7 @@ package net.aerospaceresearch.model
 import breeze.linalg.DenseVector
 import net.aerospaceresearch.math.Formulas
 import scala.collection.parallel.immutable.ParSeq
+import net.aerospaceresearch.units.Seconds
 
 /**
  * A body represents a planet, a probe, a moon, any particle etc.
@@ -53,7 +54,7 @@ trait Body {
    * @param leap δt between t0 and t1
    * @return
    */
-  def nextStep(s: SolarSystem, leap: Double) = {
+  def nextStep(s: SolarSystem, leap: Seconds) = {
     val otherBodies = s.allBodies.filter(_ != this)
     val a = acceleration(otherBodies)
     val v1 = Formulas.velocity(v0, a, leap)

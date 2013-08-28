@@ -24,6 +24,7 @@ import breeze.linalg.DenseVector
 import org.joda.time.{DateTimeUtils, DateTime}
 import net.aerospaceresearch.model.{SolarSystem, Body}
 import net.aerospaceresearch.utils.{XmlSettingsReader, SolarSystemsCsvWriter}
+import net.aerospaceresearch.units.Days
 
 
 /**
@@ -46,7 +47,10 @@ object Main {
       defaultSystem.time
     )
 
-    val intermediateSystems = systemWithMyBodies.goto(settings.startTime + settings.days, settings.recordResultsEvery, settings.leapSize)
+    val intermediateSystems = systemWithMyBodies.goto(
+      Days(settings.startTime.value + settings.days),
+      settings.recordResultsEvery, settings.leapSize
+    )
 
     new SolarSystemsCsvWriter(intermediateSystems.reverse, settings.outputDir)
   }

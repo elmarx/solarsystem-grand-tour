@@ -23,6 +23,7 @@ import org.scalatest.{FunSpec, FunSuite}
 import net.aerospaceresearch.jplparser.JplParser._
 import net.aerospaceresearch.test.jplparser.data.{ExampleHeaderFile, Ascp1950TestData, TripletData, ConstantGroupsData}
 import net.aerospaceresearch.jplparser.{EntityAssignments, Interval, CoefficientSet, JplParser}
+import net.aerospaceresearch.units.Days
 
 /**
  * Specification for the JPL Parser
@@ -101,7 +102,7 @@ class ParserSpec extends FunSpec {
           |
         """.stripMargin
 
-      expectResult((2378480.50, 2524624.50, 32.0)) {
+      expectResult((Days(2378480.50), Days(2524624.50), 32.0)) {
         parseTimingData(group1030)
       }
     }
@@ -136,7 +137,7 @@ class ParserSpec extends FunSpec {
 
       val intervals = List(List(timing, timing, x, x, x, y, y, y, z, z, z, other, other, other))
 
-      val expected = Interval(timing.toDouble, timing.toDouble, List(
+      val expected = Interval(Days(timing.toDouble), Days(timing.toDouble), List(
         CoefficientSet(List(
           (x, y, z),
           (x, y, z),
@@ -159,11 +160,11 @@ class ParserSpec extends FunSpec {
         assert(mercury.id === EntityAssignments.AstronomicalObjects.Mercury.id)
         assert(mercury.intervals.size === 3)
 
-        assert(mercury.intervals(0).startingTime === 2.433264500000000000e+06)
-        assert(mercury.intervals(0).endingTime === 2.433296500000000000e+06)
+        assert(mercury.intervals(0).startingTime === Days(2.433264500000000000e+06))
+        assert(mercury.intervals(0).endingTime === Days(2.433296500000000000e+06))
 
-        assert(mercury.intervals(2).startingTime === 2.433328500000000000e+06)
-        assert(mercury.intervals(2).endingTime === 2.433360500000000000e+06)
+        assert(mercury.intervals(2).startingTime === Days(2.433328500000000000e+06))
+        assert(mercury.intervals(2).endingTime === Days(2.433360500000000000e+06))
 
         assert(mercury.intervals(0).sets.size === 4)
 

@@ -21,9 +21,9 @@ package net.aerospaceresearch.math
 
 import net.aerospaceresearch.model.Body
 import breeze.linalg._
-import net.aerospaceresearch.jplparser.Types.JulianTime
 import scala.collection.parallel.immutable.ParSeq
 import org.apache.commons.math3.ode.nonstiff.{ClassicalRungeKuttaIntegrator, RungeKuttaIntegrator}
+import net.aerospaceresearch.units.Seconds
 
 
 /**
@@ -33,8 +33,6 @@ import org.apache.commons.math3.ode.nonstiff.{ClassicalRungeKuttaIntegrator, Run
  * Part of: solarsystem-grand-tour
  */
 object Formulas {
-
-  type Derivative[T] = (DenseVector[T], JulianTime) => DenseVector[T]
 
   // The gravitational constant in m^3/(kg*s2) from wikipedia
   val G = 6.67384e-11
@@ -64,13 +62,13 @@ object Formulas {
    * @param δt
    * @return
    */
-  def velocity(v0: DenseVector[Double], a: DenseVector[Double], δt: Double): DenseVector[Double] = {
-    val integrator = new ClassicalRungeKuttaIntegrator(δt)
+  def velocity(v0: DenseVector[Double], a: DenseVector[Double], δt: Seconds): DenseVector[Double] = {
+    val integrator = new ClassicalRungeKuttaIntegrator(δt.value)
 
     // array to hold the result
     val v1 = new Array[Double](3)
 
-    integrator.integrate(VelocityOde(a), 0.0, v0.toArray, δt, v1)
+    integrator.integrate(VelocityOde(a), 0.0, v0.toArray, δt.value, v1)
 
     DenseVector[Double](v1)
   }
@@ -82,12 +80,12 @@ object Formulas {
    * @param δt
    * @return
    */
-  def position(r0: DenseVector[Double], v1: DenseVector[Double], δt: Double): DenseVector[Double] = {
-    val integrator = new ClassicalRungeKuttaIntegrator(δt)
+  def position(r0: DenseVector[Double], v1: DenseVector[Double], δt: Seconds): DenseVector[Double] = {
+    val integrator = new ClassicalRungeKuttaIntegrator(δt.value)
 
     val r1 = new Array[Double](3)
 
-    integrator.integrate(PositionOde(v1), 0.0, r0.toArray, δt, r1)
+    integrator.integrate(PositionOde(v1), 0.0, r0.toArray, δt.value, r1)
 
     DenseVector[Double](r1)
   }

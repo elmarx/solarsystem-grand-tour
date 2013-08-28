@@ -21,6 +21,7 @@ package net.aerospaceresearch.model
 
 import net.aerospaceresearch.jplparser.Types._
 import scala.collection.parallel.immutable.ParSeq
+import net.aerospaceresearch.units.{Seconds, Days}
 
 /**
  * This class presents a solar system to a given point in time
@@ -28,15 +29,15 @@ import scala.collection.parallel.immutable.ParSeq
  * Date: 17.06.13
  * Time: 23:34
  */
-case class SolarSystem(bodies: ParSeq[Body], centerMass: Star, time: JulianTime) {
+case class SolarSystem(bodies: ParSeq[Body], centerMass: Star, time: Days) {
   /**
    * default leapsize is 1 second
    */
-  val defaultLeap = 1.0 / (24 * 60 * 60)
+  val defaultLeap = Seconds(1)
 
   val allBodies = bodies :+ centerMass
 
-  def nextStep(leap: Double = defaultLeap): SolarSystem =
+  def nextStep(leap: Seconds = defaultLeap): SolarSystem =
     SolarSystem(bodies.map(_.nextStep(this, leap)), centerMass, time + leap)
 
   /**
@@ -46,11 +47,11 @@ case class SolarSystem(bodies: ParSeq[Body], centerMass: Star, time: JulianTime)
    * @param leap
    * @return
    */
-  def goto(time: JulianTime, resultEvery: Double = 1, leap: Double = defaultLeap): List[SolarSystem] = {
+  def goto(time: Days, resultEvery: Days = Days(1), leap: Seconds = defaultLeap): List[SolarSystem] = {
     def iter(systems: List[SolarSystem], cur: SolarSystem, count: Double): List[SolarSystem] =
       if(cur.time > time) cur :: systems
-      else if(count >= resultEvery) iter(cur :: systems, cur.nextStep(leap), 0)
-      else iter(systems, cur.nextStep(leap), count + leap)
+      else if(count >= resultEvery.value) iter(cur :: systems, cur.nextStep(leap), 0)
+      else iter(systems, cur.nextStep(leap), count + leap.toDays.value)
 
     iter(Nil, this, 0.0)
   }

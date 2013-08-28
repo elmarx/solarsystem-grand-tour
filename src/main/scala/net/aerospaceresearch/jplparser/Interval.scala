@@ -19,11 +19,11 @@
 
 package net.aerospaceresearch.jplparser
 
-import Types._
+import net.aerospaceresearch.units.Days
 
-case class Interval(startingTime: JulianTime, endingTime: JulianTime, sets: List[CoefficientSet]) {
+case class Interval(startingTime: Days, endingTime: Days, sets: List[CoefficientSet]) {
 
-  def includes(pointInTime: JulianTime) = startingTime <= pointInTime && pointInTime <= endingTime
+  def includes(pointInTime: Days) = startingTime <= pointInTime && pointInTime <= endingTime
 
-  def subIntervalDuration: JulianTime = (endingTime - startingTime) / sets.size
+  def subIntervalDuration: Days = (endingTime - startingTime) / Days(sets.size)
 }
