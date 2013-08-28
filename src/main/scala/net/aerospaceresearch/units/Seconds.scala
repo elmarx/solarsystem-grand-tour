@@ -5,7 +5,7 @@ package net.aerospaceresearch.units
  */
 case class Seconds(value: Double) {
 
-  def toDays: Days = Days(24 * 60 * 60 * value)
+  def toDays: Days = Days(value / (24 * 60 * 60))
 
   def /(divisor: Seconds) = value / divisor.value
 
