@@ -7,4 +7,6 @@ case class Seconds(value: Double) {
 
   def toDays: Days = Days(24 * 60 * 60 * value)
 
+  def /(divisor: Seconds) = value / divisor.value
+
 }

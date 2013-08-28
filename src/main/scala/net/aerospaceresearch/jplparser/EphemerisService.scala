@@ -109,7 +109,7 @@ class EphemerisService(quartets: List[(Int, Int, Int, Int)],
   def subInterval(entity: AstronomicalObject, pointInTime: Days): Int = {
     val interval = entity.intervals.find(_.includes(pointInTime)).get
 
-    ((pointInTime - interval.startingTime) / interval.subIntervalDuration).value.toInt
+    ((pointInTime - interval.startingTime) / interval.subIntervalDuration).toInt
   }
 
   /**

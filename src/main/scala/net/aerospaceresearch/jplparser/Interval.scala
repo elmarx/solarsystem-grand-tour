@@ -25,5 +25,5 @@ case class Interval(startingTime: Days, endingTime: Days, sets: List[Coefficient
 
   def includes(pointInTime: Days) = startingTime <= pointInTime && pointInTime <= endingTime
 
-  def subIntervalDuration: Days = (endingTime - startingTime) / Days(sets.size)
+  def subIntervalDuration: Days = Days((endingTime - startingTime).value / sets.size)
 }
