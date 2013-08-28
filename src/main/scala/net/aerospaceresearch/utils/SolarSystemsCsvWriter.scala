@@ -34,7 +34,7 @@ import org.joda.time.{DateTimeUtils, DateTime}
  */
 class SolarSystemsCsvWriter(systems: Seq[SolarSystem], outputDir: String) {
 
-  val file = new File(outputDir + DateTimeUtils.toJulianDay(DateTime.now.toInstant.getMillis) + ".csv")
+  val file = new File(outputDir + "/" + DateTimeUtils.toJulianDay(DateTime.now.toInstant.getMillis) + ".csv")
 
 
   val header = "Julian Time" +: systems(0).bodies.map(
@@ -44,9 +44,11 @@ class SolarSystemsCsvWriter(systems: Seq[SolarSystem], outputDir: String) {
   )
 
 
-  val content = systems.par.map(
-    system => system.time + ";" + system.bodies.map(b => (b.v0.toArray ++ b.r0.toArray).mkString(";")).mkString(";")
-  )
+  val content = systems.par.map {
+    system => system.time.value + ";" + system.bodies.map(
+      b => (b.v0.toArray ++ b.r0.toArray).mkString(";")
+    ).mkString(";")
+  }
 
   val out = new PrintWriter(file)
 
