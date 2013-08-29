@@ -19,7 +19,6 @@
 
 package net.aerospaceresearch.model
 
-import net.aerospaceresearch.jplparser.Types._
 import scala.collection.parallel.immutable.ParSeq
 import net.aerospaceresearch.units.{Seconds, Days}
 
@@ -42,17 +41,21 @@ case class SolarSystem(bodies: ParSeq[Body], centerMass: Star, time: Days) {
 
   /**
    * TODO: write unit test
-   * @param time
+   * @param destinationTime
    * @param resultEvery
    * @param leap
    * @return
    */
-  def goto(time: Days, resultEvery: Days = Days(1), leap: Seconds = defaultLeap): List[SolarSystem] = {
-    def iter(systems: List[SolarSystem], cur: SolarSystem, count: Double): List[SolarSystem] =
-      if(cur.time > time) cur :: systems
-      else if(count >= resultEvery.value) iter(cur :: systems, cur.nextStep(leap), 0)
-      else iter(systems, cur.nextStep(leap), count + leap.toDays.value)
+  def goto(destinationTime: Days, resultEvery: Days = Days(1), leap: Seconds = defaultLeap): List[SolarSystem] = {
+    // we should output every `resultEvery`, so we have to do `leapsPerOutput` leaps/iterations until we add the
+    // current system to the outputlist
+    val leapsPerOutput = (resultEvery / leap).toInt
 
-    iter(Nil, this, 0.0)
+    def iter(systems: List[SolarSystem], cur: SolarSystem, count: Int): List[SolarSystem] =
+      if(cur.time >= destinationTime) cur :: systems
+      else if(count == leapsPerOutput) iter(cur :: systems, cur.nextStep(leap), 0)
+      else iter(systems, cur.nextStep(leap), count + 1)
+
+    iter(Nil, this, 0)
   }
 }

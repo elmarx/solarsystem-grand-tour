@@ -13,6 +13,7 @@ case class Days(value: Double) extends AnyVal {
 
   def <=(that: Days): Boolean = value <= that.value
   def >(that: Days): Boolean = value > that.value
+  def >=(that: Days): Boolean = value >= that.value
   def -(that: Days): Days = Days(value - that.value)
 
   def /(divisor: Days): Double = value / divisor.value
