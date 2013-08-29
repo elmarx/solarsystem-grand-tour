@@ -22,6 +22,9 @@ package net.aerospaceresearch.utils
 import net.aerospaceresearch.model.SolarSystem
 import java.io.{PrintWriter, File}
 import org.joda.time.{DateTimeUtils, DateTime}
+import org.joda.time.format.{DateTimeFormatter, DateTimeFormat}
+import java.text.{DecimalFormatSymbols, DecimalFormat, NumberFormat}
+import java.util.Locale
 
 
 /**
@@ -34,7 +37,15 @@ import org.joda.time.{DateTimeUtils, DateTime}
  */
 class SolarSystemsCsvWriter(systems: Seq[SolarSystem], outputDir: String) {
 
-  val file = new File(outputDir + "/" + DateTimeUtils.toJulianDay(DateTime.now.toInstant.getMillis) + ".csv")
+  val file = {
+    val now: DateTime = DateTime.now
+    val filename = "%s_j%s".format(
+      now.toString("yyyy-MM-dd_HH-mm-ss"),
+      new DecimalFormat("#.###", new DecimalFormatSymbols(Locale.ENGLISH)).
+        format(DateTimeUtils.toJulianDay(now.toInstant.getMillis))
+    )
+    new File(outputDir + "/" + filename + ".csv")
+  }
 
 
   val header = "Julian Time" +: systems(0).bodies.map(
@@ -44,7 +55,7 @@ class SolarSystemsCsvWriter(systems: Seq[SolarSystem], outputDir: String) {
   )
 
 
-  val content = systems.par.map {
+  val content = systems.map {
     system => system.time.value + ";" + system.bodies.map(
       b => (b.v0.toArray ++ b.r0.toArray).mkString(";")
     ).mkString(";")
