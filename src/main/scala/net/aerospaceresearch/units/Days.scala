@@ -1,6 +1,7 @@
 package net.aerospaceresearch.units
 
 import net.aerospaceresearch.utils.SiConverter
+import scala.language.implicitConversions
 
 /**
  * Created by elmar on 28.08.13.
