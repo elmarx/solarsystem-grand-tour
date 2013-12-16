@@ -15,8 +15,9 @@ The mission includes:
 * analyzing time beginning from now and within the next 176 years. 
 * Voyager or New Horizons class of probe dimensions and resources, like masses and propellant. No "Battlestar Galactica" ship with infinite resources.
 
-Expected results: 
+Expected results:
 -----------------
+
 a better understanding of orbital mechanics and a new method for interplanetary spacecraft mission design
 
 Example:
