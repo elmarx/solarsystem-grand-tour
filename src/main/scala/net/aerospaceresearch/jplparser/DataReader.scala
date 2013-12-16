@@ -38,7 +38,7 @@ object DataReader {
  */
 class DataReader {
   // all masses in Si-unit "kg"
-  lazy val masses = Map(
+  val masses = Map(
     Mercury -> BigDecimal("3.3022E23"),
     Venus -> BigDecimal("4.869E24"),
     Earth_Moon_Barycenter -> BigDecimal("6.045678E24"),
@@ -74,7 +74,7 @@ class DataReader {
     ephemerisServiceCache.getOrElseUpdate(pointInTime, JplParser.generateService(headerContent, dataContent(pointInTime)))
   }
 
-  lazy val headerContent = {
+  val headerContent = {
     val headerSource = io.Source.fromFile(s"$folderName/$headerFile")
     val headerContent = headerSource.getLines mkString "\n"
     headerSource.close()
