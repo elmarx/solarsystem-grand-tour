@@ -17,13 +17,13 @@
  * along with SolarSystemGrandTour.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package net.aerospaceresearch.utils
+package net.aerospaceresearch.output
 
 import net.aerospaceresearch.model.SolarSystem
 import java.io.{PrintWriter, File}
 import org.joda.time.{DateTimeUtils, DateTime}
-import org.joda.time.format.{DateTimeFormatter, DateTimeFormat}
-import java.text.{DecimalFormatSymbols, DecimalFormat, NumberFormat}
+import org.joda.time.format.DateTimeFormatter
+import java.text.{DecimalFormatSymbols, DecimalFormat}
 import java.util.Locale
 
 
@@ -35,7 +35,7 @@ import java.util.Locale
  * Date: 15.08.13
  * Time: 02:06
  */
-class SolarSystemsCsvWriter(systems: Seq[SolarSystem], outputDir: String) {
+class CsvWriter(systems: Seq[SolarSystem], outputDir: String) {
 
   val file = {
     val now: DateTime = DateTime.now

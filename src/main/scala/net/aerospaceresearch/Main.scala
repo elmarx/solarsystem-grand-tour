@@ -23,8 +23,9 @@ import net.aerospaceresearch.jplparser.DataReader
 import breeze.linalg.DenseVector
 import org.joda.time.{DateTimeUtils, DateTime}
 import net.aerospaceresearch.model.{SolarSystem, Body}
-import net.aerospaceresearch.utils.{XmlSettingsReader, SolarSystemsCsvWriter}
+import net.aerospaceresearch.utils.XmlSettingsReader
 import net.aerospaceresearch.units.Days
+import net.aerospaceresearch.output.CsvWriter
 
 
 /**
@@ -52,6 +53,6 @@ object Main {
       settings.recordResultsEvery, settings.leapSize
     )
 
-    new SolarSystemsCsvWriter(intermediateSystems.sortBy(_.time.value) , settings.outputDir)
+    new CsvWriter(intermediateSystems.sortBy(_.time.value) , settings.outputDir)
   }
 }
