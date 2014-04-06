@@ -24,7 +24,7 @@ import org.scalatest.BeforeAndAfter
 import net.aerospaceresearch.model.{Body, Planet, Star, SolarSystem}
 import net.aerospaceresearch.jplparser.DataReader
 import net.aerospaceresearch.jplparser.Types._
-import org.scalatest.matchers.ShouldMatchers._
+import org.scalatest.Matchers._
 import breeze.linalg.DenseVector
 import scala.collection.parallel.immutable.ParSeq
 import net.aerospaceresearch.units.{Seconds, Days}
@@ -55,13 +55,13 @@ class SolarSystemSuite extends FunSuite with BeforeAndAfter {
 
     assert(calculatedEarth.name === initialEarth.name)
 
-    calculatedEarth.v0(0) should be (expectedVelocityEarth(0) plusOrMinus 1e-5)
-    calculatedEarth.v0(1) should be (expectedVelocityEarth(1) plusOrMinus 1e-5)
-    calculatedEarth.v0(2) should be (expectedVelocityEarth(2) plusOrMinus 1e-5)
+    calculatedEarth.v0(0) should be (expectedVelocityEarth(0) +- 1e-5)
+    calculatedEarth.v0(1) should be (expectedVelocityEarth(1) +- 1e-5)
+    calculatedEarth.v0(2) should be (expectedVelocityEarth(2) +- 1e-5)
 
-    calculatedEarth.r0(0) should be (expectedPositionEarth(0) plusOrMinus 1e-4)
-    calculatedEarth.r0(1) should be (expectedPositionEarth(1) plusOrMinus 1e-4)
-    calculatedEarth.r0(2) should be (expectedPositionEarth(2) plusOrMinus 1e-4)
+    calculatedEarth.r0(0) should be (expectedPositionEarth(0) +- 1e-4)
+    calculatedEarth.r0(1) should be (expectedPositionEarth(1) +- 1e-4)
+    calculatedEarth.r0(2) should be (expectedPositionEarth(2) +- 1e-4)
   }
 
   test("can calculate the movement and velocity after one day") {
@@ -72,13 +72,13 @@ class SolarSystemSuite extends FunSuite with BeforeAndAfter {
     val givenSystem = dataReader.system(startTime + Days(1))
 
     // now compare the calculatedSystem and the givenSystem
-    calculatedSystem.time.value should be (givenSystem.time.value plusOrMinus 1e-5)
+    calculatedSystem.time.value should be (givenSystem.time.value +- 1e-5)
 
     val mercuryCalculated = calculatedSystem.bodies.find(_.name == "Mercury").get
     val mercuryGiven = givenSystem.bodies.find(_.name == "Mercury").get
 
-    mercuryCalculated.v0(0) should be (mercuryGiven.v0(0) plusOrMinus 25)
-    mercuryCalculated.r0(0) should be (mercuryGiven.r0(0) plusOrMinus 1e6)
+    mercuryCalculated.v0(0) should be (mercuryGiven.v0(0) +- 25)
+    mercuryCalculated.r0(0) should be (mercuryGiven.r0(0) +- 1e6)
   }
 
 
