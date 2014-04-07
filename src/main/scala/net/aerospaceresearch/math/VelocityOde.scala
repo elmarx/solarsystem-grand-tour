@@ -4,7 +4,8 @@ import org.apache.commons.math3.ode.FirstOrderDifferentialEquations
 import breeze.linalg.DenseVector
 
 /**
- * Created by elmar on 27.08.13.
+ * Ordinary differential equation for calculating the velocity
+ * @param a acceleration
  */
 class VelocityOde(val a: DenseVector[Double]) extends FirstOrderDifferentialEquations {
   def getDimension: Int = 3
