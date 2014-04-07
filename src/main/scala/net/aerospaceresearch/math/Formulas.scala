@@ -38,9 +38,9 @@ object Formulas {
   val G = 6.67384e-11
 
   /**
-   *
-   * @param a
-   * @param b
+   * gravitational forces a body b induces on body a
+   * @param a body to calculate the affecting forces for
+   * @param b body affecting body
    * @return
    */
   def gravitationalForces(a: Body)(b: Body): DenseVector[Double] =
@@ -48,18 +48,18 @@ object Formulas {
 
   /**
    * the acceleration is the sum of all forces, divided by the mass of the body a itself
-   * @param a
-   * @param otherBodies
+   * @param a body the acceleration is applied to
+   * @param otherBodies all bodies applieng a force tho the body
    * @return
    */
   def acceleration(a: Body, otherBodies: ParSeq[Body]): DenseVector[Double] =
     a.forcesExperienced(otherBodies).reduce(_ + _) / a.mass
 
   /**
-   *
-   * @param v0
-   * @param a
-   * @param δt
+   * calculate the velocity caused by acceleration
+   * @param v0 starting velocity
+   * @param a acceleration applied
+   * @param δt number of seconds the velocity should by accelerated
    * @return
    */
   def velocity(v0: DenseVector[Double], a: DenseVector[Double], δt: Seconds): DenseVector[Double] = {
