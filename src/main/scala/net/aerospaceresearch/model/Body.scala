@@ -63,6 +63,12 @@ trait Body {
     leapedBody(r1, v1)
   }
 
+  /**
+   * return this body leaped, i.e. with new position and velocity
+   * @param r1 next position
+   * @param v1 next velocity
+   * @return
+   */
   def leapedBody(r1: DenseVector[Double], v1: DenseVector[Double]): Body
 }
 
