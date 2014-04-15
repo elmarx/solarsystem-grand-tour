@@ -1,4 +1,6 @@
-import AssemblyKeys._
+packSettings
+
+packMain := Map("ssgt" -> "net.aerospaceresearch.Main")
 
 name := "SolarSystemGrandTour"
 
@@ -15,5 +17,3 @@ libraryDependencies ++= Seq(
   "com.github.nscala-time" %% "nscala-time" % "0.8.0",
   "org.apache.commons" % "commons-math3" % "3.2"
 )
-
-assemblySettings
