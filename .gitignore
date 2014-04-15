@@ -13,4 +13,7 @@ project/plugins/project/
 .scala_dependencies/
 .idea
 /.idea_modules
-de423
+
+
+# project specific folders
+data/

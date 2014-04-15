@@ -33,8 +33,14 @@ object DataReader {
 
 /**
  * reads files based on the julian time given
- * This file makes some assumptions (i.e.: it's specific for the 423 ephemerides set)
+ * This file makes a lot of assumptions i.e.:
+ * - it's specific for the 423 ephemerides set
+ * - the data location is hard coded
+ * - the masses are hard coded
  *
+ * so, you see, this class is kind of hacky, but as it's currently not the focus of the project to make this specific
+ * class a piece of good engineering. Before putting lot's of effort into improving this app, consider a rewrite to
+ * actually fetch data from the horizons only service.
  */
 class DataReader {
   // all masses in Si-unit "kg"
@@ -53,7 +59,7 @@ class DataReader {
   )
 
   val ephemeridesSet = 423
-  val folderName = s"de$ephemeridesSet"
+  val folderName = s"data/de$ephemeridesSet"
   val headerFile = s"header.$ephemeridesSet"
 
   /**
