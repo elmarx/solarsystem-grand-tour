@@ -89,4 +89,14 @@ object Formulas {
 
     DenseVector[Double](r1)
   }
+
+  /**
+   *
+   * @param a the absolute origin of the reference system
+   * @param b the position of a point referring to a
+   * @return
+   */
+  def absolutePosition(a: DenseVector[Double], b: DenseVector[Double]):
+  DenseVector[Double]
+  = a + b
 }
