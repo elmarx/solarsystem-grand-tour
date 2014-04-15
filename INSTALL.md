@@ -23,9 +23,10 @@ Although building is straight forward, running is a bit quirky, due to the curre
 
 The ssgt expects the following to be present:
 
+* a directory `data` and `data/output` in the current working directory
 * an input.xml file in the current working directory, containing settings. The best would be for you to copy *input
 .xml* and change it according to your needs
-* ephemerides-data [provided by NASA][3], please mirror the complete *de423* folder to the current working directory
+* ephemerides-data [provided by NASA][3], please mirror the complete *de423* folder to the directory `data`
 
 These quirkiness is subject to change, but with low priority.
 
@@ -38,7 +39,7 @@ I assume you're familiar with sbt.
 If you want to use this project for "learning-by-doing" scala, the following commands might help you to explore this
 project a bit:
 
-1. start sbt command line tool simply by running `sbt`, you now have the sbt prompt
+1. start sbt command line tool simply by running `sbt`, now you've got the sbt prompt
 2. enter `run` to run the project's main class.
 3. enter `test` to execute the unit tests
 4. prefix any command with *~* to make sbt watch for changed files. If any file changes, the command is being re-run.
