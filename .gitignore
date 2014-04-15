@@ -16,4 +16,5 @@ project/plugins/project/
 
 
 # project specific folders
-data/
+/data/
+
