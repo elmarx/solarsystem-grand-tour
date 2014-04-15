@@ -1,7 +1,7 @@
 package net.aerospaceresearch.test.utils
 
 import org.scalatest.FunSuite
-import org.scalatest.matchers.ShouldMatchers._
+import org.scalatest.Matchers._
 import net.aerospaceresearch.utils.SiConverter
 
 /**
@@ -19,7 +19,7 @@ class SiConverterSpec extends FunSuite {
   }
 
   test("velocity conversion") {
-    SiConverter.fromKmPerDay(30000).toDouble should be (347.2 plusOrMinus 0.03)
+    SiConverter.fromKmPerDay(30000).toDouble should be (347.2 +- 0.03)
   }
 
 }

@@ -22,7 +22,6 @@ package net.aerospaceresearch.test
 import org.scalatest.FunSuite
 import net.aerospaceresearch.model.{Planet, RelativeBody, Probe}
 import breeze.linalg.DenseVector
-import org.scalatest.Matchers._
 
 class RelativeBodySuite extends FunSuite {
 

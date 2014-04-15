@@ -23,7 +23,7 @@ import org.scalatest.FunSpec
 import net.aerospaceresearch.jplparser.{JplParser, EntityAssignments}
 import EntityAssignments.AstronomicalObjects._
 import net.aerospaceresearch.utils.SiConverter._
-import org.scalatest.matchers.ShouldMatchers._
+import org.scalatest.Matchers._
 import net.aerospaceresearch.test.jplparser.data.{ExampleHeaderFile, Ascp1950TestData}
 import net.aerospaceresearch.units.Days
 
@@ -37,16 +37,16 @@ class EphemerisServiceSpec extends FunSpec {
   describe("the EphemerisService") {
 
     it("calculates the chebyshev time") {
-      expectResult(-1.0)(service.chebyshevTime(Mercury, Days(2433264.5)))
-      expectResult(0.75)(service.chebyshevTime(Mercury, Days(2433279.5)))
-      expectResult(0.875)(service.chebyshevTime(Venus, Days(2433279.5)))
-      expectResult(-0.0625)(service.chebyshevTime(Mars, Days(2433279.5)))
-      expectResult(0.5)(service.chebyshevTime(Moon_Geocentric, Days(2433279.5)))
+      assertResult(-1.0)(service.chebyshevTime(Mercury, Days(2433264.5)))
+      assertResult(0.75)(service.chebyshevTime(Mercury, Days(2433279.5)))
+      assertResult(0.875)(service.chebyshevTime(Venus, Days(2433279.5)))
+      assertResult(-0.0625)(service.chebyshevTime(Mars, Days(2433279.5)))
+      assertResult(0.5)(service.chebyshevTime(Moon_Geocentric, Days(2433279.5)))
     }
 
     it("calculates the subinterval for a point-in-time") {
       val moon = service.entity(Moon_Geocentric)
-      expectResult(3)(service.subInterval(moon, Days(2433279.5)))
+      assertResult(3)(service.subInterval(moon, Days(2433279.5)))
     }
 
     it("calculates the chebyshev position polynoms") {
@@ -77,7 +77,7 @@ class EphemerisServiceSpec extends FunSpec {
       assert(position._3.toDouble === expectedPosition._3.toDouble)
     }
 
-    it("returs the chebyshev velocity polynoms") {
+    it("returns the chebyshev velocity polynoms") {
       val calculator = service.velocityPolynomVariables(-1) _
 
       assert(BigDecimal(-4) === calculator(2))
@@ -101,7 +101,7 @@ class EphemerisServiceSpec extends FunSpec {
       val velocity = service.velocity(Mercury, Days(2433264.5))
 
       assert(velocity._1.toDouble === expectedVelocity._1.toDouble, "x mismatches")
-      velocity._2.toDouble should be (expectedVelocity._2.toDouble plusOrMinus 1e-11)
+      velocity._2.toDouble should be (expectedVelocity._2.toDouble +- 1e-11)
       assert(velocity._3.toDouble === expectedVelocity._3.toDouble, "z mismatches")
     }
 

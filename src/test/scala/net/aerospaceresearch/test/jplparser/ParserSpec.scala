@@ -33,7 +33,7 @@ class ParserSpec extends FunSpec {
   describe("The JPL Parser") {
 
     it("should convert JPL style decimals to BigDecimal") {
-      expectResult(BigDecimal("0.216336838636074100E-01")) {
+      assertResult(BigDecimal("0.216336838636074100E-01")) {
         JplParser.parseDecimal("0.216336838636074100D-01")
       }
     }
@@ -41,7 +41,7 @@ class ParserSpec extends FunSpec {
     it("should read the constant groups into a Map") {
       new ConstantGroupsData {
 
-        expectResult(referenceMap) {
+        assertResult(referenceMap) {
           JplParser.parseConstantGroups(rawNamesWithLeadingWhitespace, rawValuesWithLeadingWhitespace)
           JplParser.parseConstantGroups(rawNames, rawValues)
         }
@@ -50,22 +50,22 @@ class ParserSpec extends FunSpec {
 
     it("reads the triplets") {
       new TripletData {
-        expectResult((3, 14, 4))(JplParser.parseTriplets(tripletGroup).head)
-        expectResult((899, 10, 4))(JplParser.parseTriplets(tripletGroup).last)
+        assertResult((3, 14, 4))(JplParser.parseTriplets(tripletGroup).head)
+        assertResult((899, 10, 4))(JplParser.parseTriplets(tripletGroup).last)
       }
     }
 
     it("augments triplets to be quartets") {
       new TripletData {
-        expectResult((3, 14, 4, 3))(JplParser.parseQuartets(tripletGroup).head)
-        expectResult((819, 10, 4, 2))(JplParser.parseQuartets(tripletGroup)(11))
-        expectResult((899, 10, 4, 3))(JplParser.parseQuartets(tripletGroup).last)
+        assertResult((3, 14, 4, 3))(JplParser.parseQuartets(tripletGroup).head)
+        assertResult((819, 10, 4, 2))(JplParser.parseQuartets(tripletGroup)(11))
+        assertResult((899, 10, 4, 3))(JplParser.parseQuartets(tripletGroup).last)
       }
     }
 
     it("calculates the number of records based on the parsed triplet") {
       new TripletData {
-        expectResult(1016) {
+        assertResult(1016) {
           recordsPerInterval(parseQuartets(tripletGroup))
         }
       }
@@ -85,7 +85,7 @@ class ParserSpec extends FunSpec {
           |
           |k
         """.stripMargin
-      expectResult("a b c d e f g h i j k") {
+      assertResult("a b c d e f g h i j k") {
         normalize(multiline)
       }
     }
@@ -102,13 +102,13 @@ class ParserSpec extends FunSpec {
           |
         """.stripMargin
 
-      expectResult((Days(2378480.50), Days(2524624.50), 32.0)) {
+      assertResult((Days(2378480.50), Days(2524624.50), 32.0)) {
         parseTimingData(group1030)
       }
     }
 
     it("knows how many entries to drop at the end of an interval") {
-      expectResult(2)(numberOfTrailingEntries(1016))
+      assertResult(2)(numberOfTrailingEntries(1016))
     }
 
 
@@ -119,7 +119,7 @@ class ParserSpec extends FunSpec {
         List("start3", "end3", "9", "10", "11", "12", "12")
       )
 
-      expectResult(expectedResult) {
+      assertResult(expectedResult) {
         groupOfIntervals(List(
           "index1", "number", "start1", "end1", "1", "2", "3", "4", "4", "empty", "empty",
           "index2", "number", "start2", "end2", "5", "6", "7", "8", "8", "empty", "empty",
@@ -145,7 +145,7 @@ class ParserSpec extends FunSpec {
         ))
       ))
 
-      expectResult(List(expected)) {
+      assertResult(List(expected)) {
         extractIntervalsForEntity((3, 3, 1, 3), intervals)
       }
     }
