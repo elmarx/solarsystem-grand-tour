@@ -38,7 +38,7 @@ I assume you're familiar with sbt.
 If you want to use this project for "learning-by-doing" scala, the following commands might help you to explore this
 project a bit:
 
-1. start sbt command line tool simply by running `sbt`, you know have the sbt prompt
+1. start sbt command line tool simply by running `sbt`, you now have the sbt prompt
 2. enter `run` to run the project's main class.
 3. enter `test` to execute the unit tests
 4. prefix any command with *~* to make sbt watch for changed files. If any file changes, the command is being re-run.
