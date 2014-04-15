@@ -91,12 +91,19 @@ object Formulas {
   }
 
   /**
+   * calculate the absolute position of a point b, relative to another system's position a
    *
    * @param a the absolute origin of the reference system
    * @param b the position of a point referring to a
    * @return
    */
-  def absolutePosition(a: DenseVector[Double], b: DenseVector[Double]):
-  DenseVector[Double]
-  = a + b
+  def absolutePosition(a: DenseVector[Double], b: DenseVector[Double]): DenseVector[Double] = a + b
+
+  /**
+   * calculate the absolute velocity of a velocity b, relative to another system's velocity b
+   * @param a the absolute velocity of the reference system
+   * @param b the relative velocity compared to a
+   * @return
+   */
+  def absoluteVelocity(a: DenseVector[Double], b: DenseVector[Double]): DenseVector[Double] = a + b
 }
