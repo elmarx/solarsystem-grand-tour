@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013 Elmar Athmer
+ * Copyright (c) 2014 Elmar Athmer
  *
  * This file is part of SolarSystemGrandTour.
  *
@@ -27,10 +27,9 @@ import net.aerospaceresearch.units.Seconds
 
 
 /**
- * TODO: add documentation
+ * The Formulas object is a collection of all required calculations, for easier reference, review
+ * and testing.
  *
- * User: Elmar Athmer
- * Part of: solarsystem-grand-tour
  */
 object Formulas {
 
@@ -74,10 +73,11 @@ object Formulas {
   }
 
   /**
+   * calculate the position of a body
    *
-   * @param r0
-   * @param v1
-   * @param δt
+   * @param r0 initial position of the body
+   * @param v1 velocity of the body
+   * @param δt interval of seconds the body should move
    * @return
    */
   def position(r0: DenseVector[Double], v1: DenseVector[Double], δt: Seconds): DenseVector[Double] = {
