@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013 Elmar Athmer
+ * Copyright (c) 2014 Elmar Athmer
  *
  * This file is part of SolarSystemGrandTour.
  *
@@ -23,9 +23,9 @@ import Types._
 
 case class CoefficientSet(coefficients: List[Coefficient]) {
 
-  def _1 : List[BigDecimal] = coefficients.map(_._1)
-  def _2 : List[BigDecimal] = coefficients.map(_._2)
-  def _3 : List[BigDecimal] = coefficients.map(_._3)
+  val _1 : List[BigDecimal] = coefficients.map(_._1)
+  val _2 : List[BigDecimal] = coefficients.map(_._2)
+  val _3 : List[BigDecimal] = coefficients.map(_._3)
 }
 
 object CoefficientSet {
