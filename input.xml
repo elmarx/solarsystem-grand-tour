@@ -1,3 +1,22 @@
+<!--
+  ~ Copyright (c) 2014 Elmar Athmer
+  ~
+  ~ This file is part of SolarSystemGrandTour.
+  ~
+  ~ SolarSystemGrandTour is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ SolarSystemGrandTour is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with SolarSystemGrandTour.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
 <ssgt>
     <settings>
         <!-- Julian time to start -->
@@ -16,11 +35,12 @@
         <leapSize>1</leapSize>
     </settings>
     <bodies>
-        <probe>
+        <probe system="Earth_Moon_Barycenter">
             <name>MS-Runge-Kutter</name>
             <mass>500</mass>
-            <r x="1.3146840673306523E11" y="-6.903083454259082E10" z="-2.9938239238302685E10" />
-            <v x="14285.488227006828" y="23647.55081212654" z="10251.639425458558" />
+            <!-- Provide the coordinates in equatorial coordinate system -->
+            <r x="100" y="100" z="100" />
+            <v x="100" y="100" z="100" />
         </probe>
     </bodies>
 
