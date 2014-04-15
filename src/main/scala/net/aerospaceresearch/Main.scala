@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013 Elmar Athmer
+ * Copyright (c) 2014 Elmar Athmer
  *
  * This file is part of SolarSystemGrandTour.
  *
@@ -42,8 +42,11 @@ object Main {
     val settings = new XmlSettingsReader("input.xml")
 
     val defaultSystem = new DataReader().system(settings.startTime)
+
+    val myBodies = settings.bodies ++ settings.relativeBodies.map(_.resolve(settings.bodies ++ defaultSystem.bodies))
+
     val systemWithMyBodies = SolarSystem(
-      defaultSystem.bodies ++ settings.bodies,
+      defaultSystem.bodies ++ myBodies,
       defaultSystem.centerMass,
       defaultSystem.time
     )
